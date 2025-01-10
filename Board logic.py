@@ -1,5 +1,6 @@
 import pygame
-# from LoadTextures import *
+from LoadTextures import *
+from Boxes import *
 
 
 class Board:
@@ -21,15 +22,13 @@ class Board:
     def render(self, screen):
         for i in range(self.height):
             for j in range(self.width):
-                fill = 1 if self.board[i][j] == 0 else 0
                 if self.board[i][j] == 1:
-                    color = (255, 0, 0)
+                    Box_O(self.left + self.cell_size * j, self.top + self.cell_size * i, all_sprites)
                 elif self.board[i][j] == 2:
-                    color = (0, 0, 255)
-                else:
-                    color = (255, 255, 255)
+                    Box_X(self.left + self.cell_size * j, self.top + self.cell_size * i, all_sprites)
+
                 cords = (self.left + self.cell_size * j, self.top + self.cell_size * i, self.cell_size, self.cell_size)
-                pygame.draw.rect(screen, color, cords, fill)
+                pygame.draw.rect(screen, (255, 255, 255), cords, 1)
 
     def get_cell(self, mouse_pos):
         x, y = mouse_pos
@@ -55,11 +54,18 @@ class Board:
         self.on_click(cell)
 
 
-screen = pygame.display.set_mode((500, 500))
+screen = pygame.display.set_mode((1920, 1080))
 board = Board(7, 6)
-board.set_view(100, 100, 50)
-# image = load_image("back.jpg")
-# screen.blit(image, (10, 10))
+board.set_view(487, 135, 135)
+
+all_sprites = pygame.sprite.Group()
+back = pygame.sprite.Sprite(all_sprites)
+back.image = load_image("back.jpg")
+back.rect = back.image.get_rect()
+
+back.rect.x = 0
+back.rect.y = 0
+
 running = True
 while running:
     for event in pygame.event.get():
@@ -68,5 +74,6 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             board.get_click(event.pos)
     screen.fill((0, 0, 0))
+    all_sprites.draw(screen)
     board.render(screen)
     pygame.display.flip()
