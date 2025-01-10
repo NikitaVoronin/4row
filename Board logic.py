@@ -1,4 +1,5 @@
 import pygame
+# from LoadTextures import *
 
 
 class Board:
@@ -45,8 +46,9 @@ class Board:
                 break
             else:
                 y += 1
-        self.board[y][x] = self.player
-        self.player = 1 if self.player == 2 else 2
+        if self.board[y][x] == 0:
+            self.board[y][x] = self.player
+            self.player = 1 if self.player == 2 else 2
 
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
@@ -56,6 +58,8 @@ class Board:
 screen = pygame.display.set_mode((500, 500))
 board = Board(7, 6)
 board.set_view(100, 100, 50)
+# image = load_image("back.jpg")
+# screen.blit(image, (10, 10))
 running = True
 while running:
     for event in pygame.event.get():
