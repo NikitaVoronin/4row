@@ -1,25 +1,15 @@
 import pygame
-import time
-from LoadTextures import *
 from Boxes import *
-
-pygame.init()
-infoObject = pygame.display.Info()
-screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
+from Constants import *
 
 
 class Board:
-    def __init__(self, width, height):
+    def __init__(self, width, height, left, top, cell_size):
         self.width = width
         self.height = height
         self.board = [[0] * width for _ in range(height)]
         self.player = 1
 
-        self.left = 10
-        self.top = 10
-        self.cell_size = 30
-
-    def set_view(self, left, top, cell_size):
         self.left = left
         self.top = top
         self.cell_size = cell_size
@@ -55,7 +45,7 @@ class Board:
             return None
 
     def on_click(self, cell_coords):
-        if cell_coords is None or cell_coords[0] > 6 or cell_coords[1] > 5:
+        if cell_coords is None or cell_coords[0] > FIELD_WIDTH - 1 or cell_coords[1] > FIELD_HEIGHT - 1:
             return
         x, y = cell_coords
 
@@ -69,7 +59,7 @@ class Board:
             falling_boxes.sprites()[0].kill()
 
         while self.board[y][x] == 0:
-            if y == 5 or self.board[y + 1][x] != 0:
+            if y == self.height - 1 or self.board[y + 1][x] != 0:
                 break
             else:
                 y += 1
@@ -81,45 +71,3 @@ class Board:
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
         self.on_click(cell)
-
-
-board = Board(7, 6)
-board.set_view(487, 180, 135)
-
-placed_boxes = pygame.sprite.Group()
-background = pygame.sprite.Group()
-ground_border = pygame.sprite.Group()
-falling_boxes = pygame.sprite.Group()
-
-back = pygame.sprite.Sprite(background)
-back.image = load_image("Background.jpg")
-back.rect = back.image.get_rect()
-back.rect.x = 0
-back.rect.y = 0
-
-
-ground = pygame.sprite.Sprite(ground_border)
-ground.rect = pygame.Rect(board.left, board.top + board.cell_size * board.height,
-                          board.left + board.cell_size * board.width, board.top + board.cell_size * board.height)
-
-prev_time = time.perf_counter()
-current_time = prev_time
-FPS = 60
-STEP_TIME = 1./FPS
-running = True
-
-while running:
-    prev_time = current_time
-    current_time = time.perf_counter()
-    dt = current_time - prev_time
-
-    while time.perf_counter() < (current_time + STEP_TIME):
-        pass
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            board.get_click(event.pos)
-    board.render(screen)
-    pygame.display.update()

@@ -1,12 +1,13 @@
 import pygame
 from LoadTextures import *
+from Constants import *
 
 
 class BoxO(pygame.sprite.Sprite):
     image = load_image('O_Box.png')
     image_selected = load_image('O_AllocatedBox.png')
-    image = pygame.transform.scale(image, (135, 135))
-    image_selected = pygame.transform.scale(image_selected, (135, 135))
+    image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+    image_selected = pygame.transform.scale(image_selected, (CELL_SIZE, CELL_SIZE))
 
     def __init__(self, x, y, *group):
         super().__init__(*group)
@@ -30,8 +31,8 @@ class BoxO(pygame.sprite.Sprite):
 class BoxX(pygame.sprite.Sprite):
     image = load_image('X_Box.png')
     image_selected = load_image('X_AllocatedBox.png')
-    image = pygame.transform.scale(image, (135, 135))
-    image_selected = pygame.transform.scale(image_selected, (135, 135))
+    image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+    image_selected = pygame.transform.scale(image_selected, (CELL_SIZE, CELL_SIZE))
 
     def __init__(self, x, y, *group):
         super().__init__(*group)
