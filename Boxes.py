@@ -14,12 +14,11 @@ class BoxO(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.velocity = 25
+        self.velocity = 15
 
     def update(self, *args):
         self.rect = self.rect.move(0, self.velocity)
         if pygame.sprite.spritecollideany(self, args[1]) or pygame.sprite.spritecollideany(self, args[2]):
-            self.velocity = 0
             self.kill()
 
         if args[0] is not None:
@@ -40,12 +39,11 @@ class BoxX(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.velocity = 25
+        self.velocity = 15
 
     def update(self, *args):
         self.rect = self.rect.move(0, self.velocity)
         if pygame.sprite.spritecollideany(self, args[1]) or pygame.sprite.spritecollideany(self, args[2]):
-            self.velocity = 0
             self.kill()
 
         if args[0] is not None:

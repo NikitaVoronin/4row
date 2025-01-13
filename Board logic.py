@@ -3,6 +3,10 @@ import time
 from LoadTextures import *
 from Boxes import *
 
+pygame.init()
+infoObject = pygame.display.Info()
+screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
+
 
 class Board:
     def __init__(self, width, height):
@@ -21,16 +25,26 @@ class Board:
         self.cell_size = cell_size
 
     def render(self, screen):
+        background.draw(screen)
+        falling_boxes.draw(screen)
+
         for i in range(self.height):
             for j in range(self.width):
                 cords = (self.left + self.cell_size * j, self.top + self.cell_size * i, self.cell_size, self.cell_size)
-                if self.board[i][j] != 0 and len(falling_boxes.sprites()) == 0:
+                pygame.draw.rect(screen, (255, 255, 255), cords, 1)
+
+                if self.board[i][j] != 0:
+                    if (falling_boxes.sprites() and falling_boxes.sprites()[0].rect.x == cords[0] and
+                            self.board[i - 1][j] == 0):
+                        continue
                     if self.board[i][j] == 1:
                         BoxO(cords[0], cords[1], placed_boxes)
                     elif self.board[i][j] == 2:
                         BoxX(cords[0], cords[1], placed_boxes)
 
-                pygame.draw.rect(screen, (255, 255, 255), cords, 1)
+        placed_boxes.draw(screen)
+        falling_boxes.update(None, ground_border, placed_boxes)
+        placed_boxes.empty()
 
     def get_cell(self, mouse_pos):
         x, y = mouse_pos
@@ -51,6 +65,9 @@ class Board:
             elif self.player == 2:
                 BoxX(self.left + self.cell_size * x, self.top + self.cell_size * y, falling_boxes)
 
+        if len(falling_boxes.sprites()) > 1:
+            falling_boxes.sprites()[0].kill()
+
         while self.board[y][x] == 0:
             if y == 5 or self.board[y + 1][x] != 0:
                 break
@@ -66,7 +83,6 @@ class Board:
         self.on_click(cell)
 
 
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 board = Board(7, 6)
 board.set_view(487, 180, 135)
 
@@ -105,9 +121,5 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             board.get_click(event.pos)
-    background.draw(screen)
-    falling_boxes.draw(screen)
-    falling_boxes.update(None, ground_border, placed_boxes)
-    placed_boxes.draw(screen)
     board.render(screen)
     pygame.display.update()
