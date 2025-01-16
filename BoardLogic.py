@@ -13,15 +13,19 @@ class Board:
                       [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]],
                       [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]],
                       [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]]]
+
         self.player = True
 
         self.left = left
         self.top = top
         self.cell_size = cell_size
 
+        BoxX(self.left // 4, self.top // 4, False, player_mark)
+
     def render(self, screen):
         background.draw(screen)
         falling_boxes.draw(screen)
+        player_mark.draw(screen)
 
         for i in range(self.height):
             for j in range(self.width):
@@ -62,16 +66,21 @@ class Board:
                 self.player = not self.player
 
         self.player = not self.player
+        player_mark.empty()
+        if self.player:
+            BoxX(self.left // 3, self.top // 3, False, player_mark)
+        else:
+            BoxO(self.left // 3, self.top // 3, False, player_mark)
 
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
         self.on_click(cell)
 
     def spawn_new_box(self, x, y):
-        if self.player is False:
-            BoxO(self.left + self.cell_size * x, self.top + self.cell_size * y, self.board[y][x][1], falling_boxes)
-        elif self.player is True:
+        if self.player:
             BoxX(self.left + self.cell_size * x, self.top + self.cell_size * y, self.board[y][x][1], falling_boxes)
+        else:
+            BoxO(self.left + self.cell_size * x, self.top + self.cell_size * y, self.board[y][x][1], falling_boxes)
 
         if len(falling_boxes.sprites()) > 1:
             falling_boxes.sprites()[0].kill()

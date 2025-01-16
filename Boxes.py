@@ -26,11 +26,6 @@ class BoxO(pygame.sprite.Sprite):
             self.kill()
             self.velocity = 0
 
-        if args[0] is not None:
-            if (args and args[0].type == pygame.MOUSEBUTTONDOWN and
-                    self.rect.collidepoint(args[0].pos)):
-                self.image = self.image_selected
-
 
 class BoxX(pygame.sprite.Sprite):
     image = load_image('X_Box.png')
@@ -54,8 +49,3 @@ class BoxX(pygame.sprite.Sprite):
         if pygame.sprite.spritecollideany(self, args[1]) or pygame.sprite.spritecollideany(self, args[2]):
             self.kill()
             self.velocity = 0
-
-        if args[0] is not None:
-            if (args and args[0].type == pygame.MOUSEBUTTONDOWN and
-                    self.rect.collidepoint(args[0].pos)):
-                self.image = self.image_selected
