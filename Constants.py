@@ -5,8 +5,8 @@ infoObject = pygame.display.Info()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 
-FIELD_WIDTH = 9
-FIELD_HEIGHT = 8
+FIELD_WIDTH = 7
+FIELD_HEIGHT = 6
 
 
 if len(pygame.display.get_desktop_sizes()) > 1:
