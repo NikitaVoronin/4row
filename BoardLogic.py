@@ -1,6 +1,9 @@
 import pygame
 from Boxes import *
 from Constants import *
+from MatrixMaster import *
+
+matrix_master = MatrixMaster((FIELD_WIDTH, FIELD_HEIGHT))
 
 
 class Board:
@@ -15,6 +18,7 @@ class Board:
                       [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]]]
 
         self.player = True
+        self.result = None
 
         self.left = left
         self.top = top
@@ -44,6 +48,12 @@ class Board:
         placed_boxes.draw(screen)
         falling_boxes.update(None, ground_border, placed_boxes)
         placed_boxes.empty()
+
+        if self.result:
+            for cell_cord in self.result[1]:
+                rect_cords = (self.left + self.cell_size * cell_cord[0], self.top + self.cell_size * cell_cord[1],
+                              self.cell_size, self.cell_size)
+                pygame.draw.rect(screen, (255, 255, 75), rect_cords, 10)
 
     def get_cell(self, mouse_pos):
         x, y = mouse_pos
@@ -92,8 +102,7 @@ class Board:
                 y += 1
 
         self.board[y][x][0] = self.player
-        # for i in range(self.height):
-        #     print(self.board[i])
+        self.result = matrix_master.new_trick((x, y))
 
     def select_box(self, x, y):
         self.board[y][x][1] = not self.board[y][x][1]
