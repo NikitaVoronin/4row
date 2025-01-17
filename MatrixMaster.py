@@ -14,9 +14,15 @@ class MatrixMaster:
     def __init__(self, field_size, mode="classic", infinite_field=False, len_of_chain=-1):
         self.mode = mode
         if mode == "classic":
-            self.len_of_chain = len_of_chain if len_of_chain == -1 else self.len_of_chain = 4
+            if len_of_chain == -1:
+                self.len_of_chain = 4
+            else:
+                self.len_of_chain = len_of_chain
         elif mode == "score":
-            self.len_of_chain = len_of_chain if len_of_chain == -1 else self.len_of_chain = 3
+            if len_of_chain == -1:
+                self.len_of_chain = 3
+            else:
+                self.len_of_chain = len_of_chain
         else:
             raise ModeError("Неизвестный режим игры")
         self.infinite_field = infinite_field
@@ -53,10 +59,10 @@ class MatrixMaster:
                 and sum(map(lambda y: y[1], selected_tricks)) ==
                 0.5 * (selected_tricks[0][1] + selected_tricks[-1][1]) * len(selected_tricks)):
 
-            selected_team = set([self.field[trick_coords[1], trick_coords[0]]] for trick_coords in selected_tricks)
+            selected_team = set([self.field[trick_coords[1]][trick_coords[0]] for trick_coords in selected_tricks])
             if len(selected_team) == 1:
                 if tuple(selected_team)[0] == self.moving_now:
-                    if len(selected_team) >= self.len_of_chain:
+                    if len(selected_tricks) >= self.len_of_chain:
                         return 100 * len(selected_tricks) ** 2
                     else:
                         raise TricksChoiceIsWrong("Ряд слишком короткий")
@@ -133,28 +139,3 @@ def compare_matrices(matrix1, matrix2):
                 for x in range(7):
                     if np_matrix1[y][x] != np_matrix2[y][x]:
                         return x, y
-
-
-a = [
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-]
-
-b = [
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-]
-
-# print(compare_matrices(a, b))
-
-
-mm = MatrixMaster((2, 2))
-mm.scoring([(4, 3), (3, 2), (2, 1)])
