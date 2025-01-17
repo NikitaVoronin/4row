@@ -17,14 +17,15 @@ class Board:
                       [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]],
                       [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]]]
 
-        self.player = True
-        self.result = None
+        self.player = True if matrix_master.moving_now == 'X' else False
+        self.winner = None
 
         self.left = left
         self.top = top
         self.cell_size = cell_size
 
-        BoxX(self.left // 4, self.top // 4, False, player_mark)
+        marker_box = (BoxX(self.left // 4, self.top // 4, False, player_mark) if self.player else
+                      BoxO(self.left // 4, self.top // 4, False, player_mark))
 
     def render(self, screen):
         background.draw(screen)
@@ -49,7 +50,7 @@ class Board:
         falling_boxes.update(None, ground_border, placed_boxes)
         placed_boxes.empty()
 
-        if self.result:
+        if self.winner:
             for cell_cord in self.result[1]:
                 rect_cords = (self.left + self.cell_size * cell_cord[0], self.top + self.cell_size * cell_cord[1],
                               self.cell_size, self.cell_size)
@@ -78,9 +79,9 @@ class Board:
         self.player = not self.player
         player_mark.empty()
         if self.player:
-            BoxX(self.left // 3, self.top // 3, False, player_mark)
+            BoxX(self.left // 4, self.top // 4, False, player_mark)
         else:
-            BoxO(self.left // 3, self.top // 3, False, player_mark)
+            BoxO(self.left // 4, self.top // 4, False, player_mark)
 
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
