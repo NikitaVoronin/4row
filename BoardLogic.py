@@ -18,7 +18,7 @@ class Board:
                       [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]]]
 
         self.player = True
-        self.result = None
+        self.winner = None
 
         self.left = left
         self.top = top
@@ -49,8 +49,8 @@ class Board:
         falling_boxes.update(None, ground_border, placed_boxes)
         placed_boxes.empty()
 
-        if self.result:
-            for cell_cord in self.result[1]:
+        if self.winner:
+            for cell_cord in self.winner[1]:
                 rect_cords = (self.left + self.cell_size * cell_cord[0], self.top + self.cell_size * cell_cord[1],
                               self.cell_size, self.cell_size)
                 pygame.draw.rect(screen, (255, 255, 75), rect_cords, 10)
@@ -102,7 +102,7 @@ class Board:
                 y += 1
 
         self.board[y][x][0] = self.player
-        self.result = matrix_master.new_trick((x, y))
+        self.winner = matrix_master.new_trick((x, y))
 
     def select_box(self, x, y):
         self.board[y][x][1] = not self.board[y][x][1]

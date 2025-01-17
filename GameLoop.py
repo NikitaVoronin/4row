@@ -41,9 +41,9 @@ while running:
             board.get_click(event.pos)
 
     board.render(screen)
-    if board.result:
+    if board.winner:
         font = pygame.font.Font(None, 72)
-        text = font.render(board.result[0], False, (255, 255, 255))
+        text = font.render(board.winner[0], False, (255, 255, 255))
         screen.blit(text, (TOP_INDENT, LEFT_INDENT))
 
     pygame.display.update()
