@@ -8,8 +8,10 @@ screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 FIELD_WIDTH = 7
 FIELD_HEIGHT = 6
 
+print(pygame.display.get_desktop_sizes())
 
-if len(pygame.display.get_desktop_sizes()) > 1:
+
+if type(len(pygame.display.get_desktop_sizes())) == tuple:
     SCREEN_SIZE = pygame.display.get_desktop_sizes()[0]
 else:
     SCREEN_SIZE = pygame.display.get_desktop_sizes()
