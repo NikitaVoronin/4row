@@ -41,10 +41,10 @@ class MatrixMaster:
             winner = self.check_winner()
             if winner:
                 return winner
-            if self.infinite_field:
-                self.check_inf_field()
 
     def scoring(self, selected_tricks):
+        if self.mode != "score":
+            return ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
         selected_tricks = sorted(selected_tricks, key=lambda trick: (trick[0], trick[1]))
         if (len(set([i[0] for i in selected_tricks])) == 1
                 and sum(map(lambda y: y[1], selected_tricks)) ==
@@ -75,7 +75,7 @@ class MatrixMaster:
 
 
     def check_winner(self):
-        if self.mode == "score":
+        if self.mode != "classic":
             raise ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
         for y in range(self.field.shape[0]):
             row_str = "".join(self.field[y, :])
@@ -125,8 +125,15 @@ class MatrixMaster:
                 else:
                     return "crosses win", [(self.field_size[0] - n, n - d2) for n in range(position, position + self.len_of_chain)]
 
-    def check_inf_field(self):
-        pass
+    def del_last_row(self, old_matrix):
+        if not self.infinite_field:
+            return ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
+        self.field = self.field[0:-1]
+        self.field = np.insert(self.field, 0, ["-", "-", "-", "-", "-", "-", "-"], axis=0)
+        new_matrix = old_matrix[0:-1]
+        new_matrix.insert(0, [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]])
+        return new_matrix
+
 
 def compare_matrices(matrix1, matrix2):
     np_matrix1 = np.array(matrix1)
