@@ -41,10 +41,6 @@ class Menu:
                                   self.start_game,
                                   menu_sprites)
 
-    def render(self):
-        background.draw(screen)
-        menu_sprites.draw(screen)
-
     def start_game(self):
         self.menu_flag = False
 

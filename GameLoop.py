@@ -11,7 +11,7 @@ menu = Menu()
 
 
 back = pygame.sprite.Sprite(background)
-back.image = load_image("Background.jpg")
+back.image = pygame.transform.scale(load_image("Background.jpg"), SCREEN_SIZE)
 back.rect = back.image.get_rect()
 back.rect.x = 0
 back.rect.y = 0
@@ -40,7 +40,8 @@ while running:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 menu_sprites.update(event)
 
-        menu.render()
+        background.draw(screen)
+        menu_sprites.draw(screen)
 
     else:
         for event in pygame.event.get():
