@@ -3,9 +3,11 @@ import time
 from LoadTextures import *
 from BoardLogic import Board
 from Constants import *
+from MenuLogic import *
 
 
 board = Board(FIELD_WIDTH, FIELD_HEIGHT, LEFT_INDENT, TOP_INDENT, CELL_SIZE)
+menu = Menu()
 
 
 back = pygame.sprite.Sprite(background)
@@ -31,19 +33,29 @@ while running:
     current_time = time.perf_counter()
     dt = current_time - prev_time
 
+    if menu.menu_flag:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                menu_sprites.update(event)
+
+        menu.render()
+
+    else:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                board.get_click(event.pos)
+
+        board.render(screen)
+        if board.winner:
+            font = pygame.font.Font(None, 72)
+            text = font.render(board.winner[0], False, (255, 255, 255))
+            screen.blit(text, (TOP_INDENT, LEFT_INDENT))
+
     while time.perf_counter() < (current_time + STEP_TIME):
         pass
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            board.get_click(event.pos)
-
-    board.render(screen)
-    if board.winner:
-        font = pygame.font.Font(None, 72)
-        text = font.render(board.winner[0], False, (255, 255, 255))
-        screen.blit(text, (TOP_INDENT, LEFT_INDENT))
 
     pygame.display.update()
