@@ -27,7 +27,6 @@ class Board:
         BoxX(self.left // 4, self.top // 4, False, player_mark)
 
     def render(self, screen):
-        background.draw(screen)
         falling_boxes.draw(screen)
         player_mark.draw(screen)
 

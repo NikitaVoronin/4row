@@ -33,6 +33,8 @@ while running:
     current_time = time.perf_counter()
     dt = current_time - prev_time
 
+    background.draw(screen)
+
     if menu.menu_flag:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -40,7 +42,6 @@ while running:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 menu_sprites.update(event)
 
-        background.draw(screen)
         menu_sprites.draw(screen)
 
     else:

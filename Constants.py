@@ -2,7 +2,6 @@ import pygame
 from LoadTextures import *
 
 pygame.init()
-infoObject = pygame.display.Info()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 
@@ -10,10 +9,7 @@ FIELD_WIDTH = 7
 FIELD_HEIGHT = 6
 
 
-if type(pygame.display.get_desktop_sizes()) == list:
-    SCREEN_SIZE = pygame.display.get_desktop_sizes()[0]
-else:
-    SCREEN_SIZE = pygame.display.get_desktop_sizes()
+SCREEN_SIZE = pygame.display.get_window_size()
 
 
 CELL_SIZE = int(SCREEN_SIZE[1] // (FIELD_HEIGHT + 2))
