@@ -10,14 +10,17 @@ class Board:
     def __init__(self, width, height, left, top, cell_size):
         self.width = width
         self.height = height
-        self.board = [[[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]],
-                      [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]],
-                      [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]],
-                      [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]],
-                      [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]],
-                      [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]]]
+        self.board = []
 
-        self.player = True
+        for i in range(self.height):
+            self.board.append([])
+            for j in range(self.width):
+                self.board[-1].append([None, False])
+
+        if matrix_master.moving_now == 'X':
+            self.player = True
+        else:
+            self.player = False
         self.winner = None
 
         self.left = left

@@ -6,15 +6,15 @@ screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 
 FIELD_WIDTH = 7
-FIELD_HEIGHT = 6
+FIELD_HEIGHT = 10
 
 
 SCREEN_SIZE = pygame.display.get_window_size()
 
 
-CELL_SIZE = int(SCREEN_SIZE[1] // (FIELD_HEIGHT + 2))
-LEFT_INDENT = int((SCREEN_SIZE[0] - CELL_SIZE * FIELD_WIDTH) // 2)
-TOP_INDENT = int(CELL_SIZE // 0.7)
+CELL_SIZE = int(SCREEN_SIZE[1] // FIELD_HEIGHT)
+LEFT_INDENT = int((SCREEN_SIZE[0] - SCREEN_SIZE[1] * FIELD_WIDTH * 0.125) // 2)
+TOP_INDENT = int(CELL_SIZE * 0.75)
 
 
 placed_boxes = pygame.sprite.Group()
