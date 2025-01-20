@@ -4,17 +4,12 @@ from Constants import *
 
 
 class BoxO(pygame.sprite.Sprite):
-    image = load_image('O_Box.png')
-    image_selected = load_image('O_AllocatedBox.png')
-    image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
-    image_selected = pygame.transform.scale(image_selected, (CELL_SIZE, CELL_SIZE))
-
-    def __init__(self, x, y, selected, *group):
+    def __init__(self, x, y, size, selected, *group):
         super().__init__(*group)
         if selected:
-            self.image = BoxO.image_selected
+            self.image = pygame.transform.scale(load_image('O_AllocatedBox.png'), (size, size))
         else:
-            self.image = BoxO.image
+            self.image = pygame.transform.scale(load_image('O_Box.png'), (size, size))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -28,17 +23,12 @@ class BoxO(pygame.sprite.Sprite):
 
 
 class BoxX(pygame.sprite.Sprite):
-    image = load_image('X_Box.png')
-    image_selected = load_image('X_AllocatedBox.png')
-    image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
-    image_selected = pygame.transform.scale(image_selected, (CELL_SIZE, CELL_SIZE))
-
-    def __init__(self, x, y, selected, *group):
+    def __init__(self, x, y, size, selected, *group):
         super().__init__(*group)
         if selected:
-            self.image = BoxX.image_selected
+            self.image = pygame.transform.scale(load_image('X_AllocatedBox.png'), (size, size))
         else:
-            self.image = BoxX.image
+            self.image = pygame.transform.scale(load_image('X_Box.png'), (size, size))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y

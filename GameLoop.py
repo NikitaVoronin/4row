@@ -7,7 +7,7 @@ from MenuLogic import *
 
 
 menu = Menu()
-board = Board(menu.board_width, menu.board_height, LEFT_INDENT, TOP_INDENT, CELL_SIZE)
+board = Board(menu.board_width, menu.board_height, menu.left, menu.top, menu.cell_size)
 
 
 back = pygame.sprite.Sprite(background)
@@ -41,20 +41,27 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 menu_sprites.update(event)
+                board.board = menu.create_board()
         menu.render()
 
     else:
+        menu_sprites.empty()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 board.get_click(event.pos)
+                board.width = menu.board_width
+                board.height = menu.board_height
+                board.cell_size = menu.cell_size
+                board.top = menu.top
+                board.left = board.left
 
         board.render(screen)
         if board.winner:
             font = pygame.font.Font('chinese.stxinwei.ttf', 72)
             text = font.render(board.winner[0].upper(), False, (255, 255, 255))
-            screen.blit(text, (TOP_INDENT, LEFT_INDENT))
+            screen.blit(text, (menu.top, menu.left))
 
     while time.perf_counter() < (current_time + STEP_TIME):
         pass
