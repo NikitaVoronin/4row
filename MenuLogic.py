@@ -22,11 +22,14 @@ class Menu:
     def __init__(self):
         self.screen_width = SCREEN_SIZE[0]
         self.screen_height = SCREEN_SIZE[1]
-        self.board_width = 7
-        self.board_height = 6
-        self.cell_size = int(SCREEN_SIZE[1] // (self.board_height + 2))
-        self.left = int((SCREEN_SIZE[0] - SCREEN_SIZE[1] * self.board_width * 0.125) // 2)
-        self.top = int(self.cell_size * 0.75)
+        self.board_width = BOARD_WIDTH
+        self.board_height = BOARD_HEIGHT
+
+        self.bottom_intend = BOTTOM_INTEND
+        self.cell_size = CELL_SIZE
+        self.left_intend = LEFT_INTEND
+        self.top_intend = TOP_INTEND
+
         self.menu_flag = True
         self.font = pygame.font.Font('chinese.stxinwei.ttf', int(SCREEN_SIZE[0] * 0.025))
 
@@ -91,7 +94,7 @@ class Menu:
         board_width_field.rect.x = SCREEN_SIZE[0] * 0.3
         board_width_field.rect.y = SCREEN_SIZE[1] * 0.3
 
-        self.button_width_up_intend = ((self.button_width_down_intend[0] * 10 // 9 + self.checkbox_size[0]) * 1.01, SCREEN_SIZE[1] * 0.3)
+        self.button_width_up_intend = (SCREEN_SIZE[0] * 0.348, SCREEN_SIZE[1] * 0.3)
         self.button_width_up = Button(self.button_width_up_intend[0],
                                       self.button_width_up_intend[1],
                                       pygame.transform.scale(load_image('Arrow.png'),
@@ -99,7 +102,7 @@ class Menu:
                                       self.board_width_up,
                                       menu_sprites)
 
-        self.button_height_down_intend = ((self.button_width_up_intend[0] + self.arrow_size[0]) * 1.01, SCREEN_SIZE[1] * 0.3)
+        self.button_height_down_intend = (SCREEN_SIZE[0] * 0.38, SCREEN_SIZE[1] * 0.3)
         self.button_height_down = Button(self.button_height_down_intend[0],
                                          self.button_height_down_intend[1],
                                          pygame.transform.scale(load_image('Arrow2.png'),
@@ -113,7 +116,7 @@ class Menu:
         board_height_field.rect.x = SCREEN_SIZE[0] * 0.41
         board_height_field.rect.y = SCREEN_SIZE[1] * 0.3
 
-        self.button_height_up_intend = (self.button_height_down_intend[0] * 1.087 + self.checkbox_size[0], SCREEN_SIZE[1] * 0.3)
+        self.button_height_up_intend = (SCREEN_SIZE[0] * 0.458, SCREEN_SIZE[1] * 0.3)
         self.button_height_up = Button(self.button_height_up_intend[0],
                                        self.button_height_up_intend[1],
                                        pygame.transform.scale(load_image('Arrow.png'),
@@ -144,12 +147,12 @@ class Menu:
                                   self.button_width_up_intend[1] + (self.checkbox_size[1] - self.text_endless_height.get_height()) // 2)
         screen.blit(self.text_field_size, text_field_size_intend)
 
-        text_board_width_intend = (self.checkbox_endless_height_intend[0] + (self.checkbox_size[0] - self.text_board_width.get_width()) // 2,
+        text_board_width_intend = (SCREEN_SIZE[0] * 0.3 + (self.checkbox_size[0] - self.text_board_width.get_width()) // 2,
                                    SCREEN_SIZE[1] * 0.3 + (self.checkbox_size[1] - self.text_board_width.get_height()) // 2)
         screen.blit(self.text_board_width, text_board_width_intend)
 
-        text_board_height_intend = (SCREEN_SIZE[0] * 0.41 + (self.checkbox_size[0] - self.text_board_width.get_width()) // 2,
-                                    SCREEN_SIZE[1] * 0.3 + (self.checkbox_size[1] - self.text_board_width.get_height()) // 2)
+        text_board_height_intend = (SCREEN_SIZE[0] * 0.41 + (self.checkbox_size[0] - self.text_board_height.get_width()) // 2,
+                                    SCREEN_SIZE[1] * 0.3 + (self.checkbox_size[1] - self.text_board_height.get_height()) // 2)
         screen.blit(self.text_board_height, text_board_height_intend)
 
     def create_board(self):
@@ -191,19 +194,28 @@ class Menu:
         if self.board_width < 15:
             self.board_width += 1
         self.text_board_width = self.font.render(str(self.board_width), True, (255, 255, 255))
+        self.update_render_intends()
 
     def board_width_down(self):
         if self.board_width > 7:
             self.board_width -= 1
         self.text_board_width = self.font.render(str(self.board_width), True, (255, 255, 255))
+        self.update_render_intends()
 
     def board_height_up(self):
         if self.board_height < 11:
             self.board_height += 1
         self.text_board_height = self.font.render(str(self.board_height), True, (255, 255, 255))
+        self.update_render_intends()
 
     def board_height_down(self):
         if self.board_height > 6:
             self.board_height -= 1
         self.text_board_height = self.font.render(str(self.board_height), True, (255, 255, 255))
+        self.update_render_intends()
+
+    def update_render_intends(self):
+        self.cell_size = (SCREEN_SIZE[1] - self.bottom_intend) // (self.board_height + 2)
+        self.left_intend = (SCREEN_SIZE[0] - self.cell_size * self.board_width) // 2
+        self.top_intend = 2 * self.cell_size
 

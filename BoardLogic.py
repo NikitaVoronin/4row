@@ -6,15 +6,15 @@ from MenuLogic import *
 
 
 class Board:
-    def __init__(self, width, height, left, top, cell_size):
-        self.width = width
-        self.height = height
+    def __init__(self):
+        self.width = BOARD_WIDTH
+        self.height = BOARD_HEIGHT
 
         self.winner = None
 
-        self.left = left
-        self.top = top
-        self.cell_size = cell_size
+        self.left = LEFT_INTEND
+        self.top = TOP_INTEND
+        self.cell_size = CELL_SIZE
 
     def render(self, screen):
         falling_boxes.draw(screen)
@@ -32,7 +32,7 @@ class Board:
             for cell_cord in self.winner[1]:
                 rect_cords = (self.left + self.cell_size * cell_cord[0], self.top + self.cell_size * cell_cord[1],
                               self.cell_size, self.cell_size)
-                pygame.draw.rect(screen, (255, 255, 75), rect_cords, 10)
+                pygame.draw.rect(screen, (255, 255, 75), rect_cords, int(SCREEN_SIZE[1] * 0.009))
 
     def get_cell(self, mouse_pos):
         x, y = mouse_pos
@@ -71,9 +71,6 @@ class Board:
         else:
             BoxO(self.left + self.cell_size * x, self.top + self.cell_size * y, self.cell_size, self.board[y][x][1], falling_boxes)
 
-        # if len(falling_boxes.sprites()) > 1:
-        #     falling_boxes.sprites()[0].kill()
-
         while self.board[y][x][0] is None:
             if y == self.height - 1 or self.board[y + 1][x][0] is not None:
                 break
@@ -88,14 +85,15 @@ class Board:
         return True
 
     def set_board(self, board):
-        self.board = board
+        player_mark.empty()
 
+        self.board = board
         self.matrix_master = MatrixMaster((self.width, self.height))
 
         if self.matrix_master.moving_now == 'X':
             self.player = True
-            BoxX(self.left // 4, self.top // 4, self.cell_size, False, player_mark)
+            BoxX(self.left // 3, self.top // 3, self.cell_size, False, player_mark)
         else:
             self.player = False
-            BoxO(self.left // 4, self.top // 4, self.cell_size, False, player_mark)
+            BoxO(self.left // 3, self.top // 3, self.cell_size, False, player_mark)
 
