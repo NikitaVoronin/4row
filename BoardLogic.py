@@ -7,22 +7,14 @@ from MenuLogic import *
 
 class Board:
     def __init__(self, width, height, left, top, cell_size):
-        self.matrix_master = MatrixMaster((width, height))
         self.width = width
         self.height = height
-        self.board = []
 
-        if self.matrix_master.moving_now == 'X':
-            self.player = True
-        else:
-            self.player = False
         self.winner = None
 
         self.left = left
         self.top = top
         self.cell_size = cell_size
-
-        BoxX(self.left // 4, self.top // 4, self.cell_size, False, player_mark)
 
     def render(self, screen):
         falling_boxes.draw(screen)
@@ -33,19 +25,8 @@ class Board:
                 cords = (self.left + self.cell_size * j, self.top + self.cell_size * i, self.cell_size, self.cell_size)
                 pygame.draw.rect(screen, (255, 255, 255), cords, 1)
 
-                if self.board[i][j][0] is not None:
-                    if (falling_boxes.sprites() and falling_boxes.sprites()[0].rect.x == cords[0] and
-                            self.board[i - 1][j][0] is None):
-                        continue
-                    if self.board[i][j][0] is False:
-                        BoxO(cords[0], cords[1], self.cell_size, self.board[i][j][1], placed_boxes)
-                    elif self.board[i][j][0] is True:
-                        BoxX(cords[0], cords[1], self.cell_size, self.board[i][j][1], placed_boxes)
-
+        falling_boxes.update(ground_border, placed_boxes)
         placed_boxes.draw(screen)
-        falling_boxes.update(None, ground_border, placed_boxes)
-
-        placed_boxes.empty()
 
         if self.winner:
             for cell_cord in self.winner[1]:
@@ -90,8 +71,8 @@ class Board:
         else:
             BoxO(self.left + self.cell_size * x, self.top + self.cell_size * y, self.cell_size, self.board[y][x][1], falling_boxes)
 
-        if len(falling_boxes.sprites()) > 1:
-            falling_boxes.sprites()[0].kill()
+        # if len(falling_boxes.sprites()) > 1:
+        #     falling_boxes.sprites()[0].kill()
 
         while self.board[y][x][0] is None:
             if y == self.height - 1 or self.board[y + 1][x][0] is not None:
@@ -105,3 +86,16 @@ class Board:
     def select_box(self, x, y):
         self.board[y][x][1] = not self.board[y][x][1]
         return True
+
+    def set_board(self, board):
+        self.board = board
+
+        self.matrix_master = MatrixMaster((self.width, self.height))
+
+        if self.matrix_master.moving_now == 'X':
+            self.player = True
+            BoxX(self.left // 4, self.top // 4, self.cell_size, False, player_mark)
+        else:
+            self.player = False
+            BoxO(self.left // 4, self.top // 4, self.cell_size, False, player_mark)
+

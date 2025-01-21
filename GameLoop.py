@@ -41,7 +41,12 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 menu_sprites.update(event)
-                board.board = menu.create_board()
+                board.width = menu.board_width
+                board.height = menu.board_height
+                board.cell_size = menu.cell_size
+                board.top = menu.top
+                board.left = board.left
+                board.set_board(menu.create_board())
         menu.render()
 
     else:
@@ -51,11 +56,6 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 board.get_click(event.pos)
-                board.width = menu.board_width
-                board.height = menu.board_height
-                board.cell_size = menu.cell_size
-                board.top = menu.top
-                board.left = board.left
 
         board.render(screen)
         if board.winner:

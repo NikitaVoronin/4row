@@ -10,16 +10,20 @@ class BoxO(pygame.sprite.Sprite):
             self.image = pygame.transform.scale(load_image('O_AllocatedBox.png'), (size, size))
         else:
             self.image = pygame.transform.scale(load_image('O_Box.png'), (size, size))
+        self.size = size
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.velocity = 15
 
     def update(self, *args):
-        self.rect = self.rect.move(0, self.velocity)
-        if pygame.sprite.spritecollideany(self, args[1]) or pygame.sprite.spritecollideany(self, args[2]):
-            self.kill()
+        if pygame.sprite.spritecollideany(self, args[0]) or pygame.sprite.spritecollideany(self, args[1]):
             self.velocity = 0
+            self.kill()
+            placed_boxes.add(BoxO(self.rect.x, self.rect.y, self.size, False, placed_boxes))
+        else:
+            self.velocity = 15
+            self.rect = self.rect.move(0, self.velocity)
 
 
 class BoxX(pygame.sprite.Sprite):
@@ -29,13 +33,17 @@ class BoxX(pygame.sprite.Sprite):
             self.image = pygame.transform.scale(load_image('X_AllocatedBox.png'), (size, size))
         else:
             self.image = pygame.transform.scale(load_image('X_Box.png'), (size, size))
+        self.size = size
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.velocity = 15
 
     def update(self, *args):
-        self.rect = self.rect.move(0, self.velocity)
-        if pygame.sprite.spritecollideany(self, args[1]) or pygame.sprite.spritecollideany(self, args[2]):
-            self.kill()
+        if pygame.sprite.spritecollideany(self, args[0]) or pygame.sprite.spritecollideany(self, args[1]):
             self.velocity = 0
+            self.kill()
+            placed_boxes.add(BoxX(self.rect.x, self.rect.y, self.size, False, placed_boxes))
+        else:
+            self.velocity = 15
+            self.rect = self.rect.move(0, self.velocity)
