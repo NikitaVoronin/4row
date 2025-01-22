@@ -47,3 +47,13 @@ class BoxX(pygame.sprite.Sprite):
         else:
             self.velocity = 15
             self.rect = self.rect.move(0, self.velocity)
+
+
+class Rock(pygame.sprite.Sprite):
+    def __init__(self, x, y, size, *group):
+        super().__init__(*group)
+        self.image = pygame.transform.scale(load_image('YEEEEE_ROOOCK.png'), (size, size))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+

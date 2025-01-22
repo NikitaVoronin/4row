@@ -75,7 +75,6 @@ class MatrixMaster:
         else:
             raise TricksChoiceIsWrong("Фишки не стоят в ряд")
 
-
     def check_winner(self):
         if self.mode != "classic":
             raise ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")

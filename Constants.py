@@ -19,9 +19,9 @@ LEN_OF_CHAIN = 4
 placed_boxes = pygame.sprite.Group()
 background = pygame.sprite.Group()
 ground_border = pygame.sprite.Group()
+rocks = pygame.sprite.Group()
 falling_boxes = pygame.sprite.Group()
 player_mark = pygame.sprite.Group()
-
 menu_sprites = pygame.sprite.Group()
 
 

@@ -45,6 +45,10 @@ while running:
                 board.cell_size = menu.cell_size
                 board.top = menu.top_intend
                 board.left = menu.left_intend
+                board.mode_classic = menu.mode_classic
+                board.endless_height_flag = menu.endless_height_flag
+                board.relief_field_flag = menu.relief_field_flag
+                board.len_of_chain = menu.len_of_chain
                 board.set_board(menu.create_board())
         menu.render()
 
