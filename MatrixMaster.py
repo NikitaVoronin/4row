@@ -11,7 +11,7 @@ class TricksChoiceIsWrong(BaseException):
 
 
 class MatrixMaster:
-    def __init__(self, field_size, mode="classic", infinite_field=False, len_of_chain=-1):
+    def __init__(self, field_size, mode="classic", infinite_field=False, len_of_chain=-1, relief=False):
         self.mode = mode
         if mode == "classic":
             if len_of_chain == -1:
@@ -28,6 +28,8 @@ class MatrixMaster:
         self.infinite_field = infinite_field
         self.field_size = (field_size[1], field_size[0])
         self.field = np.full(self.field_size, "-")
+        if relief:
+            self.relief = self.make_relief()
         self.moving_now = random.choice(["X", "O"])
 
     def new_trick(self, coords):
@@ -133,6 +135,19 @@ class MatrixMaster:
         new_matrix = old_matrix[0:-1]
         new_matrix.insert(0, [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]])
         return new_matrix
+
+    def make_relief(self):
+        obstacles_x = []
+        while len(set(obstacles_x)) < self.field_size[1] * 0.4 or len(set(obstacles_x)) > self.field_size[1] * 0.75:
+            obstacles_x = random.choices(list(range(self.field_size[1])), k=round(self.field_size[1] * 0.8))
+        obstacles = []
+        for obstacle in obstacles_x:
+            y = self.field_size[0] - 1
+            while self.field[y][obstacle] != "-":
+                y -= 1
+            self.field[y][obstacle] = "="
+            obstacles.append((obstacle, y))
+        return obstacles
 
 
 def compare_matrices(matrix1, matrix2):
