@@ -2,11 +2,34 @@ import random
 import numpy as np
 
 
+class ModeError(BaseException):
+    pass
+
+
+class TricksChoiceIsWrong(BaseException):
+    pass
+
+
 class MatrixMaster:
-    def __init__(self, field_size, len_of_chain=4):
+    def __init__(self, field_size, mode="classic", infinite_field=False, len_of_chain=-1, relief=False):
+        self.mode = mode
+        if mode == "classic":
+            if len_of_chain == -1:
+                self.len_of_chain = 4
+            else:
+                self.len_of_chain = len_of_chain
+        elif mode == "score":
+            if len_of_chain == -1:
+                self.len_of_chain = 3
+            else:
+                self.len_of_chain = len_of_chain
+        else:
+            raise ModeError("Неизвестный режим игры")
+        self.infinite_field = infinite_field
         self.field_size = (field_size[1], field_size[0])
-        self.len_of_chain = len_of_chain
         self.field = np.full(self.field_size, "-")
+        if relief:
+            self.relief = self.make_relief()
         self.moving_now = random.choice(["X", "O"])
 
     def new_trick(self, coords):
@@ -15,9 +38,47 @@ class MatrixMaster:
             self.moving_now = "X"
         else:
             self.moving_now = "O"
-        return self.check_winner()
+
+        if self.mode == "classic":
+            winner = self.check_winner()
+            if winner:
+                return winner
+
+    def scoring(self, selected_tricks):
+        if self.mode != "score":
+            return ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
+        selected_tricks = sorted(selected_tricks, key=lambda trick: (trick[0], trick[1]))
+        if (len(set([i[0] for i in selected_tricks])) == 1
+                and sum(map(lambda y: y[1], selected_tricks)) ==
+                0.5 * (selected_tricks[0][1] + selected_tricks[-1][1]) * len(selected_tricks)) \
+            or \
+                (len(set([i[1] for i in selected_tricks])) == 1
+                and sum(map(lambda x: x[0], selected_tricks)) ==
+                0.5 * (selected_tricks[0][0] + selected_tricks[-1][0]) * len(selected_tricks)) \
+            or \
+                (sum(map(lambda x: x[0], selected_tricks)) ==
+                0.5 * (selected_tricks[0][0] + selected_tricks[-1][0]) * len(selected_tricks)
+                and sum(map(lambda y: y[1], selected_tricks)) ==
+                0.5 * (selected_tricks[0][1] + selected_tricks[-1][1]) * len(selected_tricks)):
+
+            selected_team = set([self.field[trick_coords[1]][trick_coords[0]] for trick_coords in selected_tricks])
+            if len(selected_team) == 1:
+                if tuple(selected_team)[0] == self.moving_now:
+                    if len(selected_tricks) >= self.len_of_chain:
+                        return 100 * len(selected_tricks) ** 2
+                    else:
+                        raise TricksChoiceIsWrong("Ряд слишком короткий")
+                else:
+                    raise TricksChoiceIsWrong("Сейчас ход другой команды")
+            else:
+                raise TricksChoiceIsWrong("Выберете только свои фишки")
+        else:
+            raise TricksChoiceIsWrong("Фишки не стоят в ряд")
+
 
     def check_winner(self):
+        if self.mode != "classic":
+            raise ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
         for y in range(self.field.shape[0]):
             row_str = "".join(self.field[y, :])
             if self.len_of_chain * "O" in row_str:
@@ -65,3 +126,38 @@ class MatrixMaster:
                     return "crosses win", [(self.field_size[0] - n - d2, n) for n in range(position, position + self.len_of_chain)]
                 else:
                     return "crosses win", [(self.field_size[0] - n, n - d2) for n in range(position, position + self.len_of_chain)]
+
+    def del_last_row(self, old_matrix):
+        if not self.infinite_field:
+            return ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
+        self.field = self.field[0:-1]
+        self.field = np.insert(self.field, 0, ["-", "-", "-", "-", "-", "-", "-"], axis=0)
+        new_matrix = old_matrix[0:-1]
+        new_matrix.insert(0, [[None, False], [None, False], [None, False], [None, False], [None, False], [None, False], [None, False]])
+        return new_matrix
+
+    def make_relief(self):
+        obstacles_x = []
+        while len(set(obstacles_x)) < self.field_size[1] * 0.4 or len(set(obstacles_x)) > self.field_size[1] * 0.75:
+            obstacles_x = random.choices(list(range(self.field_size[1])), k=round(self.field_size[1] * 0.8))
+        obstacles = []
+        for obstacle in obstacles_x:
+            y = self.field_size[0] - 1
+            while self.field[y][obstacle] != "-":
+                y -= 1
+            self.field[y][obstacle] = "="
+            obstacles.append((obstacle, y))
+        return obstacles
+
+
+def compare_matrices(matrix1, matrix2):
+    np_matrix1 = np.array(matrix1)
+    np_matrix2 = np.array(matrix2)
+    if np.array_equal(np_matrix1, np_matrix2):
+        return None
+    else:
+        for y in range(6):
+            if not np.array_equal(np_matrix1[y], np_matrix2[y]):
+                for x in range(7):
+                    if np_matrix1[y][x] != np_matrix2[y][x]:
+                        return x, y
