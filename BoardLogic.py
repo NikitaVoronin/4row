@@ -37,6 +37,7 @@ class Board:
         player_mark.draw(screen)
         rocks.draw(screen)
         falling_boxes.update(self.left, self.top, ground_border, placed_boxes, rocks)
+        falling_rocks.update(self.left, self.top, ground_border)
         placed_boxes.draw(screen)
 
         for i in range(self.height):
@@ -99,6 +100,23 @@ class Board:
                         falling_boxes.add(box)
                 else:
                     placed_boxes.empty()
+
+                if self.relief_field_flag:
+                    new_relief = []
+                    for cord in self.relief_cords:
+                        if cord[1] == self.height - 1:
+                            continue
+                        else:
+                            new_relief.append((cord[0], cord[1] + 1))
+                    self.relief_cords = new_relief
+
+                    for rock in rocks.sprites():
+                        if rock.rect.y == self.top + self.cell_size * (self.height - 1):
+                            rock.kill()
+                        else:
+                            falling_rocks.add(rock)
+                    else:
+                        rocks.empty()
 
         if self.board[y][x][0] is None:
             self.spawn_new_box(x, y)

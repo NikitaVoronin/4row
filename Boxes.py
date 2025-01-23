@@ -74,8 +74,20 @@ class BoxX(pygame.sprite.Sprite):
 class Rock(pygame.sprite.Sprite):
     def __init__(self, x, y, size, *group):
         super().__init__(*group)
+        self.size = size
         self.image = pygame.transform.scale(load_image('YEEEEE_ROOOCK.png'), (size, size))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.velocity = 15
+
+    def update(self, left, top,  *args):
+        if pygame.sprite.spritecollideany(self, args[0]):
+            self.velocity = 0
+            self.kill()
+            cell_x, cell_y = (self.rect.x - left) // self.size, (self.rect.y - top) // self.size
+            placed_boxes.add(Rock(left + self.size * cell_x, top + self.size * cell_y, self.size, rocks))
+        else:
+            self.velocity = 15
+            self.rect = self.rect.move(0, self.velocity)
 
