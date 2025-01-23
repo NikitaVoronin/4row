@@ -49,7 +49,8 @@ while running:
                 board.endless_height_flag = menu.endless_height_flag
                 board.relief_field_flag = menu.relief_field_flag
                 board.len_of_chain = menu.len_of_chain
-                board.set_board(menu.create_board())
+                if not menu.menu_flag:
+                    board.set_board(menu.create_board())
         menu.render()
 
     else:
@@ -63,7 +64,7 @@ while running:
         board.render(screen)
         if board.winner:
             font = pygame.font.Font('chinese.stxinwei.ttf', 72)
-            text = font.render(board.winner[0].upper(), False, (255, 255, 255))
+            text = font.render(board.winner[0].upper(), True, (255, 255, 255))
             screen.blit(text, (menu.top_intend, menu.left_intend))
 
     while time.perf_counter() < (current_time + STEP_TIME):

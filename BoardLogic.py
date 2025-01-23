@@ -26,7 +26,7 @@ class Board:
         falling_boxes.draw(screen)
         player_mark.draw(screen)
         rocks.draw(screen)
-        falling_boxes.update(self.left, self.top, ground_border, placed_boxes)
+        falling_boxes.update(self.left, self.top, ground_border, placed_boxes, rocks)
         placed_boxes.draw(screen)
 
         for i in range(self.height):
@@ -34,10 +34,11 @@ class Board:
                 cords = (self.left + self.cell_size * j, self.top + self.cell_size * i, self.cell_size, self.cell_size)
                 pygame.draw.rect(screen, (255, 255, 255), cords, 1)
 
-        for cord in self.relief_cords:
-            i, j = cord
-            screen_cords = (self.left + self.cell_size * j, self.top + self.cell_size * i, self.cell_size)
-            Rock(*screen_cords, rocks)
+        if self.relief_cords and len(rocks.sprites()) == 0:
+            for cord in self.relief_cords:
+                x, y = cord
+                screen_cords = (self.left + self.cell_size * x, self.top + self.cell_size * y, self.cell_size)
+                Rock(*screen_cords, rocks)
 
         if self.winner:
             for cell_cord in self.winner[1]:
@@ -64,7 +65,7 @@ class Board:
                 for j in range(len(self.board[0])):
                     if self.board[i][j][0] is not None:
                         n += 1
-            if n >= int(self.width * self.height * 0.75):
+            if n >= int(self.width * self.height * 0.8):
                 self.board = self.matrix_master.del_last_row(self.board)
                 for box in placed_boxes.sprites():
                     if box.rect.y == self.top + self.cell_size * (self.height - 1):
@@ -131,4 +132,7 @@ class Board:
             BoxO(self.left // 3, self.top // 3, self.cell_size, False, player_mark)
 
         if self.relief_field_flag:
-            self.relief_cords = self.matrix_master.make_relief()
+            self.relief_cords = self.matrix_master.relief
+            for rock in self.relief_cords:
+                x, y = rock
+                self.board[y][x][0] = 0
