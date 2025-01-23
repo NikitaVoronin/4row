@@ -23,5 +23,24 @@ rocks = pygame.sprite.Group()
 falling_boxes = pygame.sprite.Group()
 player_mark = pygame.sprite.Group()
 menu_sprites = pygame.sprite.Group()
+score_desk = pygame.sprite.Group()
 
 
+back = pygame.sprite.Sprite(background)
+back.image = pygame.transform.scale(load_image("Background.jpg"), SCREEN_SIZE)
+back.rect = back.image.get_rect()
+back.rect.x = 0
+back.rect.y = 0
+
+
+deskX = pygame.sprite.Sprite(score_desk)
+deskX.image = pygame.transform.scale(load_image("Label3.png"), (SCREEN_SIZE[0] * 0.14, SCREEN_SIZE[1] * 0.1))
+deskX.rect = deskX.image.get_rect()
+deskX.rect.x = SCREEN_SIZE[0] * 0.83
+deskX.rect.y = SCREEN_SIZE[1] * 0.15
+
+deskO = pygame.sprite.Sprite(score_desk)
+deskO.image = pygame.transform.scale(load_image("Label3.png"), (SCREEN_SIZE[0] * 0.14, SCREEN_SIZE[1] * 0.1))
+deskO.rect = deskO.image.get_rect()
+deskO.rect.x = SCREEN_SIZE[0] * 0.83
+deskO.rect.y = SCREEN_SIZE[1] * 0.27

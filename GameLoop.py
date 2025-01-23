@@ -10,13 +10,6 @@ menu = Menu()
 board = Board()
 
 
-back = pygame.sprite.Sprite(background)
-back.image = pygame.transform.scale(load_image("Background.jpg"), SCREEN_SIZE)
-back.rect = back.image.get_rect()
-back.rect.x = 0
-back.rect.y = 0
-
-
 ground = pygame.sprite.Sprite(ground_border)
 ground.rect = pygame.Rect(0, SCREEN_SIZE[1] - menu.bottom_intend, SCREEN_SIZE[0], SCREEN_SIZE[1] - menu.bottom_intend)
 
@@ -60,6 +53,8 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 board.get_click(event.pos)
+                if not board.mode_classic and board.board[board.get_cell(event.pos)[1]][board.get_cell(event.pos)[0]][0] == board.player:
+                    board.select_box(board.get_cell(event.pos)[0], board.get_cell(event.pos)[1])
 
         board.render(screen)
         if board.winner:

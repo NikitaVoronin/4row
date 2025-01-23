@@ -12,15 +12,25 @@ class Board:
 
         self.winner = None
         self.relief_cords = []
+        self.selected_boxes = []
+        self.score_X = 0
+        self.score_O = 0
 
         self.left = LEFT_INTEND
         self.top = TOP_INTEND
         self.cell_size = CELL_SIZE
+        self.font = pygame.font.Font('chinese.stxinwei.ttf', int(SCREEN_SIZE[0] * 0.025))
 
         self.mode_classic = True
         self.endless_height_flag = False
         self.relief_field_flag = False
         self.len_of_chain = 4
+
+        self.text_score = self.font.render('SCORE', True, (255, 255, 255))
+        self.text_X = self.font.render('X', True, (255, 255, 255))
+        self.text_O = self.font.render('O', True, (255, 255, 255))
+        self.text_score_X = self.font.render(str(self.score_X), True, (255, 255, 255))
+        self.text_score_O = self.font.render(str(self.score_O), True, (255, 255, 255))
 
     def render(self, screen):
         falling_boxes.draw(screen)
@@ -39,6 +49,21 @@ class Board:
                 x, y = cord
                 screen_cords = (self.left + self.cell_size * x, self.top + self.cell_size * y, self.cell_size)
                 Rock(*screen_cords, rocks)
+
+        if not self.mode_classic:
+            score_desk.draw(screen)
+
+            screen.blit(self.text_score, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - self.text_score.get_width()) // 2,
+                                          SCREEN_SIZE[1] * 0.07))
+            screen.blit(self.text_X, (SCREEN_SIZE[0] * 0.8,
+                                      SCREEN_SIZE[1] * 0.15 + (SCREEN_SIZE[1] * 0.1 - self.text_X.get_height()) // 2))
+            screen.blit(self.text_O, (SCREEN_SIZE[0] * 0.8,
+                                      SCREEN_SIZE[1] * 0.27 + (SCREEN_SIZE[1] * 0.1 - self.text_O.get_height()) // 2))
+
+            screen.blit(self.text_score_X, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - self.text_score_X.get_width()) // 2,
+                                            SCREEN_SIZE[1] * 0.15 + (SCREEN_SIZE[1] * 0.1 - self.text_score_X.get_height()) // 2))
+            screen.blit(self.text_score_O, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - self.text_score_O.get_width()) // 2,
+                                            SCREEN_SIZE[1] * 0.27 + (SCREEN_SIZE[1] * 0.1 - self.text_score_O.get_height()) // 2))
 
         if self.winner:
             for cell_cord in self.winner[1]:
@@ -79,15 +104,20 @@ class Board:
             self.spawn_new_box(x, y)
 
         elif self.board[y][x][0] == self.player:
-            if self.select_box(x, y):
+            if not self.mode_classic:
+                placed_boxes.update(self.left, self.top, x, y)
                 self.player = not self.player
 
+        elif self.board[y][x][0] != self.player:
+            self.player = not self.player
+
         self.player = not self.player
+
         player_mark.empty()
         if self.player:
-            BoxX(self.left // 3, self.top // 3, self.cell_size, False, player_mark)
+            BoxX(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
         else:
-            BoxO(self.left // 3, self.top // 3, self.cell_size, False, player_mark)
+            BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
 
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
@@ -136,3 +166,6 @@ class Board:
             for rock in self.relief_cords:
                 x, y = rock
                 self.board[y][x][0] = 0
+
+        if not self.mode_classic:
+            pass

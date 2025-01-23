@@ -222,16 +222,16 @@ class Menu:
     def choose_mode_classic(self):
         self.mode_classic = True
         self.button_mode_classic.image = pygame.transform.scale(load_image('Label2.png'),
-                                                                (self.cell_size * 2, self.cell_size * 0.8))
+                                                                self.button_mode_size)
         self.button_mode_score.image = pygame.transform.scale(load_image('Label1.png'),
-                                                              (self.cell_size * 2, self.cell_size * 0.8))
+                                                              self.button_mode_size)
 
     def choose_mode_score(self):
         self.mode_classic = False
         self.button_mode_classic.image = pygame.transform.scale(load_image('Label1.png'),
-                                                                (self.cell_size * 2, self.cell_size * 0.8))
+                                                                self.button_mode_size)
         self.button_mode_score.image = pygame.transform.scale(load_image('Label2.png'),
-                                                              (self.cell_size * 2, self.cell_size * 0.8))
+                                                              self.button_mode_size)
 
     def endless_height(self):
         self.endless_height_flag = not self.endless_height_flag
