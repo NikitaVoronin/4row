@@ -3,6 +3,7 @@ import pprint
 from Boxes import *
 from Constants import *
 from MatrixMaster import *
+from Button import *
 
 
 class Board:
@@ -15,6 +16,7 @@ class Board:
         self.selected_boxes = []
         self.score_X = 0
         self.score_O = 0
+        self.max_score = 25000
 
         self.left = LEFT_INTEND
         self.top = TOP_INTEND
@@ -26,11 +28,12 @@ class Board:
         self.relief_field_flag = False
         self.len_of_chain = 4
 
-        self.text_score = self.font.render('SCORE', True, (255, 255, 255))
-        self.text_X = self.font.render('X', True, (255, 255, 255))
-        self.text_O = self.font.render('O', True, (255, 255, 255))
-        self.text_score_X = self.font.render(str(self.score_X), True, (255, 255, 255))
-        self.text_score_O = self.font.render(str(self.score_O), True, (255, 255, 255))
+        self.button_get_score = Button(SCREEN_SIZE[0] * 0.8,
+                                       SCREEN_SIZE[1] * 0.8,
+                                       pygame.transform.scale(load_image("Label1.png"),
+                                                              (SCREEN_SIZE[0] * 0.16, SCREEN_SIZE[1] * 0.12)),
+                                       self.get_score,
+                                       game_sprites)
 
     def render(self, screen):
         falling_boxes.draw(screen)
@@ -52,19 +55,28 @@ class Board:
                 Rock(*screen_cords, rocks)
 
         if not self.mode_classic:
+            text_score = self.font.render('SCORE', True, (255, 255, 255))
+            text_X = self.font.render('X', True, (255, 255, 255))
+            text_O = self.font.render('O', True, (255, 255, 255))
+            text_score_X = self.font.render(str(self.score_X), True, (255, 255, 255))
+            text_score_O = self.font.render(str(self.score_O), True, (255, 255, 255))
+            text_get_score = self.font.render('Get score', True, (255, 255, 255))
+
             score_desk.draw(screen)
 
-            screen.blit(self.text_score, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - self.text_score.get_width()) // 2,
-                                          SCREEN_SIZE[1] * 0.07))
-            screen.blit(self.text_X, (SCREEN_SIZE[0] * 0.8,
-                                      SCREEN_SIZE[1] * 0.15 + (SCREEN_SIZE[1] * 0.1 - self.text_X.get_height()) // 2))
-            screen.blit(self.text_O, (SCREEN_SIZE[0] * 0.8,
-                                      SCREEN_SIZE[1] * 0.27 + (SCREEN_SIZE[1] * 0.1 - self.text_O.get_height()) // 2))
+            screen.blit(text_score, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - text_score.get_width()) // 2,
+                                     SCREEN_SIZE[1] * 0.07))
+            screen.blit(text_X, (SCREEN_SIZE[0] * 0.8,
+                                 SCREEN_SIZE[1] * 0.15 + (SCREEN_SIZE[1] * 0.1 - text_X.get_height()) // 2))
+            screen.blit(text_O, (SCREEN_SIZE[0] * 0.8,
+                                 SCREEN_SIZE[1] * 0.27 + (SCREEN_SIZE[1] * 0.1 - text_O.get_height()) // 2))
+            screen.blit(text_get_score, (SCREEN_SIZE[0] * 0.8 + (SCREEN_SIZE[0] * 0.16 - text_get_score.get_width()) // 2,
+                                         SCREEN_SIZE[1] * 0.8 + (SCREEN_SIZE[1] * 0.12 - text_get_score.get_height()) // 2))
 
-            screen.blit(self.text_score_X, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - self.text_score_X.get_width()) // 2,
-                                            SCREEN_SIZE[1] * 0.15 + (SCREEN_SIZE[1] * 0.1 - self.text_score_X.get_height()) // 2))
-            screen.blit(self.text_score_O, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - self.text_score_O.get_width()) // 2,
-                                            SCREEN_SIZE[1] * 0.27 + (SCREEN_SIZE[1] * 0.1 - self.text_score_O.get_height()) // 2))
+            screen.blit(text_score_X, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - text_score_X.get_width()) // 2,
+                                       SCREEN_SIZE[1] * 0.15 + (SCREEN_SIZE[1] * 0.1 - text_score_X.get_height()) // 2))
+            screen.blit(text_score_O, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - text_score_O.get_width()) // 2,
+                                       SCREEN_SIZE[1] * 0.27 + (SCREEN_SIZE[1] * 0.1 - text_score_O.get_height()) // 2))
 
         if self.winner:
             for cell_cord in self.winner[1]:
@@ -157,7 +169,11 @@ class Board:
         self.winner = self.matrix_master.new_trick((x, y))
 
     def select_box(self, x, y):
-        self.board[y][x][1] = not self.board[y][x][1]
+        if not self.board[y][x][1]:
+            self.board[y][x][1] = True
+        else:
+            self.board[y][x][1] = False
+        print(self.selected_boxes)
         return True
 
     def set_board(self, board):
@@ -185,5 +201,44 @@ class Board:
                 x, y = rock
                 self.board[y][x][0] = 0
 
-        if not self.mode_classic:
-            pass
+    def get_score(self):
+        score = self.matrix_master.scoring(self.selected_boxes)
+
+        for cord in self.selected_boxes:
+            x, y = cord
+            while y > 1 or self.board[y][x][0] is not None:
+                self.board[y][x][0] = self.board[y - 1][x][0]
+                y -= 1
+            else:
+                self.board[y][x][0] = None
+
+            x, y = cord
+
+            for box in placed_boxes:
+                if (box.rect.x == self.left + self.cell_size * x and
+                        box.rect.y == self.top + self.cell_size * y):
+                    box.kill()
+
+        for box in placed_boxes:
+            box.kill()
+            falling_boxes.add(box)
+        else:
+            placed_boxes.empty()
+
+        if self.player:
+            self.score_X += score
+            if self.score_X >= self.max_score:
+                self.winner = 'crosses win'
+        else:
+            self.score_O += score
+            if self.score_O >= self.max_score:
+                self.winner = 'nulls win'
+
+        self.player = not self.player
+        player_mark.empty()
+        if self.player:
+            BoxX(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
+        else:
+            BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
+        self.selected_boxes = []
+

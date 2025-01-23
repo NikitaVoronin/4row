@@ -53,8 +53,11 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 board.get_click(event.pos)
-                if not board.mode_classic and board.board[board.get_cell(event.pos)[1]][board.get_cell(event.pos)[0]][0] == board.player:
+                game_sprites.update(event)
+                if (not board.mode_classic and board.get_cell(event.pos) and
+                        board.board[board.get_cell(event.pos)[1]][board.get_cell(event.pos)[0]][0] == board.player):
                     board.select_box(board.get_cell(event.pos)[0], board.get_cell(event.pos)[1])
+                    board.selected_boxes.append((board.get_cell(event.pos)[0], board.get_cell(event.pos)[1]))
 
         board.render(screen)
         if board.winner:
