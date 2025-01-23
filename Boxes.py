@@ -16,11 +16,12 @@ class BoxO(pygame.sprite.Sprite):
         self.rect.y = y
         self.velocity = 15
 
-    def update(self, *args):
+    def update(self, left, top,  *args):
         if pygame.sprite.spritecollideany(self, args[0]) or pygame.sprite.spritecollideany(self, args[1]):
             self.velocity = 0
             self.kill()
-            placed_boxes.add(BoxO(self.rect.x, self.rect.y, self.size, False, placed_boxes))
+            cell_x, cell_y = (self.rect.x - left) // self.size, (self.rect.y - top) // self.size
+            placed_boxes.add(BoxO(left + self.size * cell_x, top + self.size * cell_y, self.size, False, placed_boxes))
         else:
             self.velocity = 15
             self.rect = self.rect.move(0, self.velocity)
@@ -39,11 +40,12 @@ class BoxX(pygame.sprite.Sprite):
         self.rect.y = y
         self.velocity = 15
 
-    def update(self, *args):
+    def update(self, left, top,  *args):
         if pygame.sprite.spritecollideany(self, args[0]) or pygame.sprite.spritecollideany(self, args[1]):
             self.velocity = 0
             self.kill()
-            placed_boxes.add(BoxX(self.rect.x, self.rect.y, self.size, False, placed_boxes))
+            cell_x, cell_y = (self.rect.x - left) // self.size, (self.rect.y - top) // self.size
+            placed_boxes.add(BoxX(left + self.size * cell_x, top + self.size * cell_y, self.size, False, placed_boxes))
         else:
             self.velocity = 15
             self.rect = self.rect.move(0, self.velocity)

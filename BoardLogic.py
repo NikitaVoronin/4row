@@ -1,4 +1,5 @@
 import pygame
+import pprint
 from Boxes import *
 from Constants import *
 from MatrixMaster import *
@@ -10,6 +11,7 @@ class Board:
         self.height = BOARD_HEIGHT
 
         self.winner = None
+        self.relief_cords = []
 
         self.left = LEFT_INTEND
         self.top = TOP_INTEND
@@ -24,13 +26,18 @@ class Board:
         falling_boxes.draw(screen)
         player_mark.draw(screen)
         rocks.draw(screen)
-        falling_boxes.update(ground_border, placed_boxes)
+        falling_boxes.update(self.left, self.top, ground_border, placed_boxes)
         placed_boxes.draw(screen)
 
         for i in range(self.height):
             for j in range(self.width):
                 cords = (self.left + self.cell_size * j, self.top + self.cell_size * i, self.cell_size, self.cell_size)
                 pygame.draw.rect(screen, (255, 255, 255), cords, 1)
+
+        for cord in self.relief_cords:
+            i, j = cord
+            screen_cords = (self.left + self.cell_size * j, self.top + self.cell_size * i, self.cell_size)
+            Rock(*screen_cords, rocks)
 
         if self.winner:
             for cell_cord in self.winner[1]:
@@ -57,9 +64,15 @@ class Board:
                 for j in range(len(self.board[0])):
                     if self.board[i][j][0] is not None:
                         n += 1
-            if n >= int(self.width * self.height * 0.5):
+            if n >= int(self.width * self.height * 0.75):
                 self.board = self.matrix_master.del_last_row(self.board)
-                print(self.board)
+                for box in placed_boxes.sprites():
+                    if box.rect.y == self.top + self.cell_size * (self.height - 1):
+                        box.kill()
+                    else:
+                        falling_boxes.add(box)
+                else:
+                    placed_boxes.empty()
 
         if self.board[y][x][0] is None:
             self.spawn_new_box(x, y)
@@ -118,9 +131,4 @@ class Board:
             BoxO(self.left // 3, self.top // 3, self.cell_size, False, player_mark)
 
         if self.relief_field_flag:
-            relief_cords = self.matrix_master.make_relief()
-            for cord in relief_cords:
-                i, j = cord
-                screen_cords = (self.left + self.cell_size * j, self.top + self.cell_size * i, self.cell_size)
-                Rock(*screen_cords, rocks)
-
+            self.relief_cords = self.matrix_master.make_relief()
