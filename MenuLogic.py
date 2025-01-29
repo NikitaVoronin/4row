@@ -188,14 +188,6 @@ class Menu:
                                     SCREEN_SIZE[1] * 0.5 + (self.checkbox_size[1] - self.text_relief_field.get_height()) // 2)
         screen.blit(self.text_relief_field, text_relief_field_intend)
 
-    def create_board(self):
-        board = []
-        for i in range(self.board_height):
-            board.append([])
-            for j in range(self.board_width):
-                board[-1].append([None, False])
-        return board
-
     def update_render_intends(self):
         self.cell_size = (SCREEN_SIZE[1] - self.bottom_intend) // (self.board_height + 2)
         self.left_intend = (SCREEN_SIZE[0] - self.cell_size * self.board_width) // 2
@@ -203,7 +195,6 @@ class Menu:
 
     def start_game(self):
         self.menu_flag = False
-        self.create_board()
 
     def choose_mode_classic(self):
         self.mode_classic = True

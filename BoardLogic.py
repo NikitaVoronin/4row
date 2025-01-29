@@ -27,6 +27,7 @@ class Board:
         self.endless_height_flag = False
         self.relief_field_flag = False
         self.len_of_chain = 4
+        self.pause_flag = False
 
         self.button_get_score = Button(SCREEN_SIZE[0] * 0.8,
                                        SCREEN_SIZE[1] * 0.8,
@@ -35,12 +36,19 @@ class Board:
                                        self.get_score,
                                        game_sprites)
 
-        self.button_pause = Button(SCREEN_SIZE[0] * 0.05,
-                                   SCREEN_SIZE[1] * 0.05,
+        self.button_pause = Button(SCREEN_SIZE[0] * 0.02,
+                                   SCREEN_SIZE[1] * 0.035,
                                    pygame.transform.scale(load_image('Pause.png'),
                                                           (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08)),
                                    self.pause,
                                    game_sprites)
+
+        self.button_restart = Button(SCREEN_SIZE[0] * 0.02,
+                                     SCREEN_SIZE[1] * 0.2,
+                                     pygame.transform.scale(load_image('label1.png'),
+                                                            (SCREEN_SIZE[1] * 0.16, SCREEN_SIZE[1] * 0.08)),
+                                     self.restart,
+                                     pause_sprites)
 
         self.error_text = self.font.render('', True, (255, 0, 0))
 
@@ -51,6 +59,7 @@ class Board:
         falling_boxes.update(self.left, self.top, ground_border, placed_boxes, rocks)
         falling_rocks.update(self.left, self.top, ground_border)
         placed_boxes.draw(screen)
+        game_sprites.draw(screen)
 
         for i in range(self.height):
             for j in range(self.width):
@@ -62,6 +71,9 @@ class Board:
                 x, y = cord
                 screen_cords = (self.left + self.cell_size * x, self.top + self.cell_size * y, self.cell_size)
                 Rock(*screen_cords, rocks)
+
+        if self.pause_flag:
+            pause_sprites.draw(screen)
 
         if not self.mode_classic:
             text_score = self.font.render('SCORE', True, (255, 255, 255))
@@ -109,59 +121,29 @@ class Board:
             return
         x, y = cell_coords
 
-        if self.endless_height_flag:
-            n = 0
-            for i in range(len(self.board)):
-                for j in range(len(self.board[0])):
-                    if self.board[i][j][0] is not None:
-                        n += 1
-            if n >= int(self.width * self.height * 0.8):
-                self.board = self.matrix_master.del_last_row(self.board)
-                for box in placed_boxes.sprites():
-                    if box.rect.y == self.top + self.cell_size * (self.height - 1):
-                        box.kill()
-                    else:
-                        falling_boxes.add(box)
-                else:
-                    placed_boxes.empty()
+        if not self.pause_flag:
+            if self.endless_height_flag:
+                self.delete_last_row()
 
-                if self.relief_field_flag:
-                    new_relief = []
-                    for cord in self.relief_cords:
-                        if cord[1] == self.height - 1:
-                            continue
-                        else:
-                            new_relief.append((cord[0], cord[1] + 1))
-                    self.relief_cords = new_relief
+            if self.board[y][x][0] is None:
+                self.spawn_new_box(x, y)
 
-                    for rock in rocks.sprites():
-                        if rock.rect.y == self.top + self.cell_size * (self.height - 1):
-                            rock.kill()
-                        else:
-                            falling_rocks.add(rock)
-                    else:
-                        rocks.empty()
-
-        if self.board[y][x][0] is None:
-            self.spawn_new_box(x, y)
-
-        elif self.board[y][x][0] == self.player:
-            if not self.mode_classic:
+            elif self.board[y][x][0] == self.player and not self.mode_classic:
                 placed_boxes.update(self.left, self.top, x, y)
                 self.player = not self.player
 
-        elif self.board[y][x][0] != self.player:
+            elif self.board[y][x][0] != self.player:
+                self.player = not self.player
+
             self.player = not self.player
 
-        self.player = not self.player
+            player_mark.empty()
+            if self.player:
+                BoxX(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
+            else:
+                BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
 
-        player_mark.empty()
-        if self.player:
-            BoxX(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
-        else:
-            BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
-
-        self.error_text = self.font.render('', True, (255, 0, 0))
+            self.error_text = self.font.render('', True, (255, 0, 0))
 
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
@@ -189,10 +171,52 @@ class Board:
             self.board[y][x][1] = False
         return True
 
-    def set_board(self, board):
-        player_mark.empty()
+    def delete_last_row(self):
+        n = 0
+        for i in range(len(self.board)):
+            for j in range(len(self.board[0])):
+                if self.board[i][j][0] is not None:
+                    n += 1
+        if n >= int(self.width * self.height * 0.8):
+            self.board = self.matrix_master.del_last_row(self.board)
+            for box in placed_boxes.sprites():
+                if box.rect.y == self.top + self.cell_size * (self.height - 1):
+                    box.kill()
+                else:
+                    falling_boxes.add(box)
+            else:
+                placed_boxes.empty()
 
-        self.board = board
+            if self.relief_field_flag:
+                new_relief = []
+                for cord in self.relief_cords:
+                    if cord[1] == self.height - 1:
+                        continue
+                    else:
+                        new_relief.append((cord[0], cord[1] + 1))
+                self.relief_cords = new_relief
+
+                for rock in rocks.sprites():
+                    if rock.rect.y == self.top + self.cell_size * (self.height - 1):
+                        rock.kill()
+                    else:
+                        falling_rocks.add(rock)
+                else:
+                    rocks.empty()
+
+    def set_board(self):
+        player_mark.empty()
+        placed_boxes.empty()
+        falling_boxes.empty()
+        rocks.empty()
+        falling_boxes.empty()
+
+        self.board = []
+        for i in range(self.height):
+            self.board.append([])
+            for j in range(self.width):
+                self.board[-1].append([None, False])
+
         if self.mode_classic is True:
             mode = 'classic'
         else:
@@ -263,10 +287,17 @@ class Board:
             self.error_text = self.font.render(str(e), True, (255, 0, 0))
 
     def pause(self):
-        pass
+        self.pause_flag = not self.pause_flag
+        if self.pause_flag:
+            self.button_pause.image = pygame.transform.scale(load_image('Play.png'),
+                                                              (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
+        else:
+            self.button_pause.image = pygame.transform.scale(load_image('Pause.png'),
+                                   (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
 
     def restart(self):
-        pass
+        print('seted')
+        self.set_board()
 
     def home(self):
         pass

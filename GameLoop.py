@@ -43,7 +43,7 @@ while running:
                 board.relief_field_flag = menu.relief_field_flag
                 board.len_of_chain = menu.len_of_chain
                 if not menu.menu_flag:
-                    board.set_board(menu.create_board())
+                    board.set_board()
         menu.render()
 
     else:
