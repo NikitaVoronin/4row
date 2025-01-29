@@ -26,6 +26,7 @@ player_mark = pygame.sprite.Group()
 menu_sprites = pygame.sprite.Group()
 score_desk = pygame.sprite.Group()
 game_sprites = pygame.sprite.Group()
+pause_sprites = pygame.sprite.Group()
 
 
 back = pygame.sprite.Sprite(background)

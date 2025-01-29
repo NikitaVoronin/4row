@@ -35,6 +35,15 @@ class Board:
                                        self.get_score,
                                        game_sprites)
 
+        self.button_pause = Button(SCREEN_SIZE[0] * 0.05,
+                                   SCREEN_SIZE[1] * 0.05,
+                                   pygame.transform.scale(load_image('Pause.png'),
+                                                          (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08)),
+                                   self.pause,
+                                   game_sprites)
+
+        self.error_text = self.font.render('', True, (255, 0, 0))
+
     def render(self, screen):
         falling_boxes.draw(screen)
         player_mark.draw(screen)
@@ -62,8 +71,6 @@ class Board:
             text_score_O = self.font.render(str(self.score_O), True, (255, 255, 255))
             text_get_score = self.font.render('Get score', True, (255, 255, 255))
 
-            score_desk.draw(screen)
-
             screen.blit(text_score, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - text_score.get_width()) // 2,
                                      SCREEN_SIZE[1] * 0.07))
             screen.blit(text_X, (SCREEN_SIZE[0] * 0.8,
@@ -72,11 +79,15 @@ class Board:
                                  SCREEN_SIZE[1] * 0.27 + (SCREEN_SIZE[1] * 0.1 - text_O.get_height()) // 2))
             screen.blit(text_get_score, (SCREEN_SIZE[0] * 0.8 + (SCREEN_SIZE[0] * 0.16 - text_get_score.get_width()) // 2,
                                          SCREEN_SIZE[1] * 0.8 + (SCREEN_SIZE[1] * 0.12 - text_get_score.get_height()) // 2))
+            screen.blit(self.error_text, ((SCREEN_SIZE[0] - self.error_text.get_width()) // 2,
+                                          SCREEN_SIZE[1] * 0.91))
 
             screen.blit(text_score_X, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - text_score_X.get_width()) // 2,
                                        SCREEN_SIZE[1] * 0.15 + (SCREEN_SIZE[1] * 0.1 - text_score_X.get_height()) // 2))
             screen.blit(text_score_O, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - text_score_O.get_width()) // 2,
                                        SCREEN_SIZE[1] * 0.27 + (SCREEN_SIZE[1] * 0.1 - text_score_O.get_height()) // 2))
+
+            score_desk.draw(screen)
 
         if self.winner:
             for cell_cord in self.winner[1]:
@@ -93,6 +104,7 @@ class Board:
             return None
 
     def on_click(self, cell_coords):
+        print(self.selected_boxes)
         if cell_coords is None or cell_coords[0] > self.width - 1 or cell_coords[1] > self.height - 1:
             return
         x, y = cell_coords
@@ -149,6 +161,8 @@ class Board:
         else:
             BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
 
+        self.error_text = self.font.render('', True, (255, 0, 0))
+
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
         self.on_click(cell)
@@ -173,7 +187,6 @@ class Board:
             self.board[y][x][1] = True
         else:
             self.board[y][x][1] = False
-        print(self.selected_boxes)
         return True
 
     def set_board(self, board):
@@ -202,43 +215,58 @@ class Board:
                 self.board[y][x][0] = 0
 
     def get_score(self):
-        score = self.matrix_master.scoring(self.selected_boxes)
+        try:
+            score = self.matrix_master.scoring(self.selected_boxes)
 
-        for cord in self.selected_boxes:
-            x, y = cord
-            while y > 1 or self.board[y][x][0] is not None:
-                self.board[y][x][0] = self.board[y - 1][x][0]
-                y -= 1
-            else:
-                self.board[y][x][0] = None
+            for cord in self.selected_boxes:
+                x, y = cord
+                while y > 1 or self.board[y][x][0] is not None:
+                    self.board[y][x][0] = self.board[y - 1][x][0]
+                    y -= 1
+                else:
+                    self.board[y][x][0] = None
 
-            x, y = cord
+                x, y = cord
+
+                for box in placed_boxes:
+                    if (box.rect.x == self.left + self.cell_size * x and
+                            box.rect.y == self.top + self.cell_size * y):
+                        box.kill()
 
             for box in placed_boxes:
-                if (box.rect.x == self.left + self.cell_size * x and
-                        box.rect.y == self.top + self.cell_size * y):
-                    box.kill()
+                box.kill()
+                falling_boxes.add(box)
+            else:
+                placed_boxes.empty()
 
-        for box in placed_boxes:
-            box.kill()
-            falling_boxes.add(box)
-        else:
-            placed_boxes.empty()
+            if self.player:
+                self.score_X += score
+                if self.score_X >= self.max_score:
+                    self.winner = 'crosses win'
+            else:
+                self.score_O += score
+                if self.score_O >= self.max_score:
+                    self.winner = 'nulls win'
 
-        if self.player:
-            self.score_X += score
-            if self.score_X >= self.max_score:
-                self.winner = 'crosses win'
-        else:
-            self.score_O += score
-            if self.score_O >= self.max_score:
-                self.winner = 'nulls win'
+            self.player = not self.player
+            player_mark.empty()
+            if self.player:
+                BoxX(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
+            else:
+                BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
+            self.selected_boxes = []
 
-        self.player = not self.player
-        player_mark.empty()
-        if self.player:
-            BoxX(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
-        else:
-            BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
-        self.selected_boxes = []
+        except ModeError as e:
+            self.error_text = self.font.render(str(e), True, (255, 0, 0))
 
+        except TricksChoiceIsWrong as e:
+            self.error_text = self.font.render(str(e), True, (255, 0, 0))
+
+    def pause(self):
+        pass
+
+    def restart(self):
+        pass
+
+    def home(self):
+        pass
