@@ -46,25 +46,36 @@ class MatrixMaster:
 
     def scoring(self, selected_tricks):
         if self.mode != "score":
-            return ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
+            raise ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
+        if not selected_tricks:
+            raise TricksChoiceIsWrong("Хоть что-нибудь то выберите")
         selected_tricks = sorted(selected_tricks, key=lambda trick: (trick[0], trick[1]))
         if (len(set([i[0] for i in selected_tricks])) == 1
                 and sum(map(lambda y: y[1], selected_tricks)) ==
-                0.5 * (selected_tricks[0][1] + selected_tricks[-1][1]) * len(selected_tricks)) \
+                0.5 * (selected_tricks[0][1] + selected_tricks[-1][1]) * len(selected_tricks)
+                and len(selected_tricks) - 1 == selected_tricks[-1][1] - selected_tricks[0][1]) \
             or \
                 (len(set([i[1] for i in selected_tricks])) == 1
                 and sum(map(lambda x: x[0], selected_tricks)) ==
-                0.5 * (selected_tricks[0][0] + selected_tricks[-1][0]) * len(selected_tricks)) \
+                0.5 * (selected_tricks[0][0] + selected_tricks[-1][0]) * len(selected_tricks)
+                and len(selected_tricks) - 1 == selected_tricks[-1][0] - selected_tricks[0][0]) \
             or \
                 (sum(map(lambda x: x[0], selected_tricks)) ==
                 0.5 * (selected_tricks[0][0] + selected_tricks[-1][0]) * len(selected_tricks)
-                and sum(map(lambda y: y[1], selected_tricks)) ==
-                0.5 * (selected_tricks[0][1] + selected_tricks[-1][1]) * len(selected_tricks)):
+                and len(selected_tricks) - 1 == abs(selected_tricks[-1][0] - selected_tricks[0][0])
+                and
+                sum(map(lambda y: y[1], selected_tricks)) ==
+                0.5 * (selected_tricks[0][1] + selected_tricks[-1][1]) * len(selected_tricks)
+                and len(selected_tricks) - 1 == abs(selected_tricks[-1][1] - selected_tricks[0][1])):
 
             selected_team = set([self.field[trick_coords[1]][trick_coords[0]] for trick_coords in selected_tricks])
             if len(selected_team) == 1:
                 if tuple(selected_team)[0] == self.moving_now:
                     if len(selected_tricks) >= self.len_of_chain:
+                        if self.moving_now == "O":
+                            self.moving_now = "X"
+                        else:
+                            self.moving_now = "O"
                         return 100 * len(selected_tricks) ** 2
                     else:
                         raise TricksChoiceIsWrong("Ряд слишком короткий")
@@ -128,7 +139,7 @@ class MatrixMaster:
 
     def del_last_row(self, old_matrix):
         if not self.infinite_field:
-            return ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
+            raise ModeError("Данная функция не совместима с данными настройками игры или не имеет смысла при них")
         self.field = self.field[0:-1]
         self.field = np.insert(self.field, 0, ["-", "-", "-", "-", "-", "-", "-"], axis=0)
         new_matrix = old_matrix[0:-1]
