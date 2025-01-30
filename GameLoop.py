@@ -65,10 +65,6 @@ while running:
                     player_mark.empty()
 
         board.render(screen)
-        if board.winner:
-            font = pygame.font.Font('chinese.stxinwei.ttf', 72)
-            text = font.render(board.winner[0].upper(), True, (255, 255, 255))
-            screen.blit(text, (menu.top_intend, menu.left_intend))
 
     while time.perf_counter() < (current_time + STEP_TIME):
         pass

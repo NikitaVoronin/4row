@@ -21,7 +21,8 @@ class Board:
         self.left = LEFT_INTEND
         self.top = TOP_INTEND
         self.cell_size = CELL_SIZE
-        self.font = pygame.font.Font('chinese.stxinwei.ttf', int(SCREEN_SIZE[0] * 0.025))
+        self.font_size = int(SCREEN_SIZE[0] * 0.025)
+        self.font = pygame.font.Font('chinese.stxinwei.ttf', self.font_size)
 
         self.mode_classic = True
         self.endless_height_flag = False
@@ -61,6 +62,7 @@ class Board:
         falling_boxes.update(self.left, self.top, ground_border, placed_boxes, rocks)
         falling_rocks.update(self.left, self.top, ground_border)
         game_sprites.draw(screen)
+        winner_sprite.draw(screen)
 
         for i in range(self.height):
             for j in range(self.width):
@@ -113,6 +115,17 @@ class Board:
                 rect_cords = (self.left + self.cell_size * cell_cord[0], self.top + self.cell_size * cell_cord[1],
                               self.cell_size, self.cell_size)
                 pygame.draw.rect(screen, (255, 255, 75), rect_cords, int(SCREEN_SIZE[1] * 0.009))
+
+            self.desk_winner = pygame.sprite.Sprite(winner_sprite)
+            self.desk_winner.image = pygame.transform.scale(load_image("Label3.png"),
+                                                            (SCREEN_SIZE[0] * 0.25, SCREEN_SIZE[1] * 0.18))
+            self.desk_winner.rect = self.desk_winner.image.get_rect()
+            self.desk_winner.rect.x = SCREEN_SIZE[0] * 0.02
+            self.desk_winner.rect.y = SCREEN_SIZE[1] * 0.4
+
+            text = self.font.render(self.winner[0].upper(), True, (255, 255, 255))
+            screen.blit(text, (SCREEN_SIZE[0] * 0.02 + (SCREEN_SIZE[0] * 0.25 - text.get_width()) // 2,
+                               SCREEN_SIZE[1] * 0.4 + (SCREEN_SIZE[1] * 0.18 - text.get_height()) // 2))
 
     def get_cell(self, mouse_pos):
         x, y = mouse_pos
@@ -309,7 +322,7 @@ class Board:
                     self.winner = 'nulls win'
 
             self.player = not self.player
-            self.matrix_master.moving_now = 'O' if self.matrix_master.moving_now == 'X' else 'X'
+
             self.change_player_mark()
             self.selected_boxes = []
 
@@ -336,12 +349,15 @@ class Board:
                                    (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
 
     def restart(self):
+        winner_sprite.empty()
         self.set_board()
         self.pause_flag = False
+        self.winner = None
         self.button_pause.image = pygame.transform.scale(load_image('Pause.png'),
                                                          (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
 
     def to_menu(self):
+        self.relief_cords = []
         self.pause_flag = False
         self.button_pause.image = pygame.transform.scale(load_image('Pause.png'),
                                                          (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))

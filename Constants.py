@@ -2,10 +2,10 @@ import pygame
 from LoadTextures import *
 
 pygame.init()
+
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-
-
 SCREEN_SIZE = pygame.display.get_window_size()
+
 
 BOARD_HEIGHT = 6
 BOARD_WIDTH = 7
@@ -27,6 +27,7 @@ menu_sprites = pygame.sprite.Group()
 game_sprites = pygame.sprite.Group()
 score_sprites = pygame.sprite.Group()
 pause_sprites = pygame.sprite.Group()
+winner_sprite = pygame.sprite.Group()
 
 
 back = pygame.sprite.Sprite(background)
