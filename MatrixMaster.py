@@ -76,6 +76,12 @@ class MatrixMaster:
                             self.moving_now = "X"
                         else:
                             self.moving_now = "O"
+                        for trick in selected_tricks:
+                            x = trick[0]
+                            y = trick[1] - 1
+                            while y >= 0:
+                                self.field[y + 1][x] = self.field[y][x]
+                                y -= 1
                         return 100 * len(selected_tricks) ** 2
                     else:
                         raise TricksChoiceIsWrong("Ряд слишком короткий")
