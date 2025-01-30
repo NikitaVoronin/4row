@@ -193,9 +193,6 @@ class Menu:
         self.left_intend = (SCREEN_SIZE[0] - self.cell_size * self.board_width) // 2
         self.top_intend = 2 * self.cell_size
 
-    def start_game(self):
-        self.menu_flag = False
-
     def choose_mode_classic(self):
         self.mode_classic = True
         self.button_mode_classic.image = pygame.transform.scale(load_image('Label2.png'),
@@ -259,4 +256,8 @@ class Menu:
         else:
             self.checkbox_relief_field.image = pygame.transform.scale(load_image('EmptyCheckbox1.png'),
                                                                       self.checkbox_size)
+
+    def start_game(self):
+        self.menu_flag = False
+
 

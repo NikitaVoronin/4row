@@ -33,21 +33,21 @@ while running:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 menu_sprites.update(event)
-                board.width = menu.board_width
-                board.height = menu.board_height
-                board.cell_size = menu.cell_size
-                board.top = menu.top_intend
-                board.left = menu.left_intend
-                board.mode_classic = menu.mode_classic
-                board.endless_height_flag = menu.endless_height_flag
-                board.relief_field_flag = menu.relief_field_flag
-                board.len_of_chain = menu.len_of_chain
                 if not menu.menu_flag:
+                    board.width = menu.board_width
+                    board.height = menu.board_height
+                    board.cell_size = menu.cell_size
+                    board.top = menu.top_intend
+                    board.left = menu.left_intend
+                    board.mode_classic = menu.mode_classic
+                    board.endless_height_flag = menu.endless_height_flag
+                    board.relief_field_flag = menu.relief_field_flag
+                    board.len_of_chain = menu.len_of_chain
+                    board.game_flag = True
                     board.set_board()
         menu.render()
 
     else:
-        menu_sprites.empty()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -55,6 +55,14 @@ while running:
                 board.get_click(event.pos)
                 game_sprites.update(event)
                 score_sprites.update(event)
+                pause_sprites.update(event)
+                if not board.game_flag:
+                    menu.menu_flag = True
+                    rocks.empty()
+                    falling_rocks.empty()
+                    placed_boxes.empty()
+                    falling_boxes.empty()
+                    player_mark.empty()
 
         board.render(screen)
         if board.winner:

@@ -28,6 +28,7 @@ class Board:
         self.relief_field_flag = False
         self.len_of_chain = 4
         self.pause_flag = False
+        self.game_flag = False
         
         self.button_pause = Button(SCREEN_SIZE[0] * 0.02,
                                    SCREEN_SIZE[1] * 0.035,
@@ -42,6 +43,13 @@ class Board:
                                                             (SCREEN_SIZE[1] * 0.16, SCREEN_SIZE[1] * 0.08)),
                                      self.restart,
                                      pause_sprites)
+
+        self.button_menu = Button(SCREEN_SIZE[0] * 0.02,
+                                  SCREEN_SIZE[1] * 0.3,
+                                  pygame.transform.scale(load_image('label1.png'),
+                                                         (SCREEN_SIZE[1] * 0.16, SCREEN_SIZE[1] * 0.08)),
+                                  self.to_menu,
+                                  pause_sprites)
 
         self.error_text = self.font.render('', True, (255, 0, 0))
 
@@ -67,6 +75,13 @@ class Board:
 
         if self.pause_flag:
             pause_sprites.draw(screen)
+            text_restart = self.font.render('Restart', True, (255, 255, 255))
+            text_menu = self.font.render('Menu', True, (255, 255, 255))
+
+            screen.blit(text_restart, (SCREEN_SIZE[0] * 0.02 + (SCREEN_SIZE[1] * 0.16 - text_restart.get_width()) // 2,
+                                       SCREEN_SIZE[1] * 0.2 + (SCREEN_SIZE[1] * 0.08 - text_restart.get_height()) // 2))
+            screen.blit(text_menu, (SCREEN_SIZE[0] * 0.02 + (SCREEN_SIZE[1] * 0.16 - text_menu.get_width()) // 2,
+                                    SCREEN_SIZE[1] * 0.3 + (SCREEN_SIZE[1] * 0.08 - text_menu.get_height()) // 2))
 
         if not self.mode_classic:
             score_sprites.draw(screen)
@@ -167,9 +182,6 @@ class Board:
         return True
 
     def clear_select(self):
-        for i in range(self.height):
-            for j in range(self.width):
-                self.board[i][j][1] = False
         for box in placed_boxes.sprites():
             box.deselect()
         self.selected_boxes = []
@@ -324,8 +336,13 @@ class Board:
                                    (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
 
     def restart(self):
-        print('seted')
         self.set_board()
+        self.pause_flag = False
+        self.button_pause.image = pygame.transform.scale(load_image('Pause.png'),
+                                                         (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
 
-    def home(self):
-        pass
+    def to_menu(self):
+        self.pause_flag = False
+        self.button_pause.image = pygame.transform.scale(load_image('Pause.png'),
+                                                         (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
+        self.game_flag = False
