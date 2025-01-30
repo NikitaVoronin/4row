@@ -165,7 +165,8 @@ class Board:
         self.on_click(cell)
 
     def spawn_new_box(self, x, y):
-        self.clear_select()
+        if not self.mode_classic and self.selected_boxes:
+            self.clear_select()
         if self.player:
             BoxX(self.left + self.cell_size * x, self.top + self.cell_size * y, self.cell_size, self.board[y][x][1], falling_boxes)
         else:
@@ -292,7 +293,7 @@ class Board:
 
             for cord in self.selected_boxes:
                 x, y = cord
-                while y > 1 or self.board[y][x][0] is not None:
+                while y > 0 and self.board[y][x][0] is not None:
                     self.board[y][x][0] = self.board[y - 1][x][0]
                     y -= 1
                 else:
@@ -353,6 +354,8 @@ class Board:
         self.set_board()
         self.pause_flag = False
         self.winner = None
+        self.score_X = 0
+        self.score_O = 0
         self.button_pause.image = pygame.transform.scale(load_image('Pause.png'),
                                                          (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
 
