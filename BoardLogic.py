@@ -28,14 +28,7 @@ class Board:
         self.relief_field_flag = False
         self.len_of_chain = 4
         self.pause_flag = False
-
-        self.button_get_score = Button(SCREEN_SIZE[0] * 0.8,
-                                       SCREEN_SIZE[1] * 0.8,
-                                       pygame.transform.scale(load_image("Label1.png"),
-                                                              (SCREEN_SIZE[0] * 0.16, SCREEN_SIZE[1] * 0.12)),
-                                       self.get_score,
-                                       game_sprites)
-
+        
         self.button_pause = Button(SCREEN_SIZE[0] * 0.02,
                                    SCREEN_SIZE[1] * 0.035,
                                    pygame.transform.scale(load_image('Pause.png'),
@@ -54,11 +47,11 @@ class Board:
 
     def render(self, screen):
         falling_boxes.draw(screen)
+        placed_boxes.draw(screen)
         player_mark.draw(screen)
         rocks.draw(screen)
         falling_boxes.update(self.left, self.top, ground_border, placed_boxes, rocks)
         falling_rocks.update(self.left, self.top, ground_border)
-        placed_boxes.draw(screen)
         game_sprites.draw(screen)
 
         for i in range(self.height):
@@ -76,6 +69,7 @@ class Board:
             pause_sprites.draw(screen)
 
         if not self.mode_classic:
+            score_sprites.draw(screen)
             text_score = self.font.render('SCORE', True, (255, 255, 255))
             text_X = self.font.render('X', True, (255, 255, 255))
             text_O = self.font.render('O', True, (255, 255, 255))
@@ -99,8 +93,6 @@ class Board:
             screen.blit(text_score_O, (SCREEN_SIZE[0] * 0.83 + (SCREEN_SIZE[0] * 0.14 - text_score_O.get_width()) // 2,
                                        SCREEN_SIZE[1] * 0.27 + (SCREEN_SIZE[1] * 0.1 - text_score_O.get_height()) // 2))
 
-            score_desk.draw(screen)
-
         if self.winner:
             for cell_cord in self.winner[1]:
                 rect_cords = (self.left + self.cell_size * cell_cord[0], self.top + self.cell_size * cell_cord[1],
@@ -116,7 +108,6 @@ class Board:
             return None
 
     def on_click(self, cell_coords):
-        print(self.selected_boxes)
         if cell_coords is None or cell_coords[0] > self.width - 1 or cell_coords[1] > self.height - 1:
             return
         x, y = cell_coords
@@ -131,18 +122,14 @@ class Board:
             elif self.board[y][x][0] == self.player and not self.mode_classic:
                 placed_boxes.update(self.left, self.top, x, y)
                 self.player = not self.player
+                self.select_box(x, y)
 
-            elif self.board[y][x][0] != self.player:
+            elif self.board[y][x][0] == (not self.player):
                 self.player = not self.player
 
             self.player = not self.player
 
-            player_mark.empty()
-            if self.player:
-                BoxX(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
-            else:
-                BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
-
+            self.change_player_mark()
             self.error_text = self.font.render('', True, (255, 0, 0))
 
     def get_click(self, mouse_pos):
@@ -150,6 +137,7 @@ class Board:
         self.on_click(cell)
 
     def spawn_new_box(self, x, y):
+        self.clear_select()
         if self.player:
             BoxX(self.left + self.cell_size * x, self.top + self.cell_size * y, self.cell_size, self.board[y][x][1], falling_boxes)
         else:
@@ -163,13 +151,28 @@ class Board:
 
         self.board[y][x][0] = self.player
         self.winner = self.matrix_master.new_trick((x, y))
+        if self.winner:
+            self.pause_flag = True
 
     def select_box(self, x, y):
+        if (x, y) not in self.selected_boxes:
+            self.selected_boxes.append((x, y))
+        else:
+            self.selected_boxes.remove((x, y))
+
         if not self.board[y][x][1]:
             self.board[y][x][1] = True
         else:
             self.board[y][x][1] = False
         return True
+
+    def clear_select(self):
+        for i in range(self.height):
+            for j in range(self.width):
+                self.board[i][j][1] = False
+        for box in placed_boxes.sprites():
+            box.deselect()
+        self.selected_boxes = []
 
     def delete_last_row(self):
         n = 0
@@ -237,6 +240,26 @@ class Board:
             for rock in self.relief_cords:
                 x, y = rock
                 self.board[y][x][0] = 0
+                
+        if not self.mode_classic:
+            deskX = pygame.sprite.Sprite(score_sprites)
+            deskX.image = pygame.transform.scale(load_image("Label3.png"), (SCREEN_SIZE[0] * 0.14, SCREEN_SIZE[1] * 0.1))
+            deskX.rect = deskX.image.get_rect()
+            deskX.rect.x = SCREEN_SIZE[0] * 0.83
+            deskX.rect.y = SCREEN_SIZE[1] * 0.15
+
+            deskO = pygame.sprite.Sprite(score_sprites)
+            deskO.image = pygame.transform.scale(load_image("Label3.png"), (SCREEN_SIZE[0] * 0.14, SCREEN_SIZE[1] * 0.1))
+            deskO.rect = deskO.image.get_rect()
+            deskO.rect.x = SCREEN_SIZE[0] * 0.83
+            deskO.rect.y = SCREEN_SIZE[1] * 0.27
+
+            self.button_get_score = Button(SCREEN_SIZE[0] * 0.8,
+                                           SCREEN_SIZE[1] * 0.8,
+                                           pygame.transform.scale(load_image("Label1.png"),
+                                                                  (SCREEN_SIZE[0] * 0.16, SCREEN_SIZE[1] * 0.12)),
+                                           self.get_score,
+                                           score_sprites)
 
     def get_score(self):
         try:
@@ -264,6 +287,7 @@ class Board:
                 placed_boxes.empty()
 
             if self.player:
+
                 self.score_X += score
                 if self.score_X >= self.max_score:
                     self.winner = 'crosses win'
@@ -273,11 +297,8 @@ class Board:
                     self.winner = 'nulls win'
 
             self.player = not self.player
-            player_mark.empty()
-            if self.player:
-                BoxX(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
-            else:
-                BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
+            self.matrix_master.moving_now = 'O' if self.matrix_master.moving_now == 'X' else 'X'
+            self.change_player_mark()
             self.selected_boxes = []
 
         except ModeError as e:
@@ -285,6 +306,13 @@ class Board:
 
         except TricksChoiceIsWrong as e:
             self.error_text = self.font.render(str(e), True, (255, 0, 0))
+
+    def change_player_mark(self):
+        player_mark.empty()
+        if self.player:
+            BoxX(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
+        else:
+            BoxO(self.left // 3, self.top // 3, SCREEN_SIZE[1] * 5 // 48, False, player_mark)
 
     def pause(self):
         self.pause_flag = not self.pause_flag

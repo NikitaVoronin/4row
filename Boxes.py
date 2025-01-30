@@ -36,6 +36,10 @@ class BoxO(pygame.sprite.Sprite):
                 self.kill()
                 placed_boxes.add(BoxO(screen_cords[0], screen_cords[1], self.size, not self.selected))
 
+    def deselect(self):
+        self.selected = False
+        self.image = pygame.transform.scale(load_image('O_Box.png'), (self.size, self.size))
+
 
 class BoxX(pygame.sprite.Sprite):
     def __init__(self, x, y, size, selected, *group):
@@ -69,6 +73,10 @@ class BoxX(pygame.sprite.Sprite):
             if self.rect.collidepoint(screen_cords):
                 self.kill()
                 placed_boxes.add(BoxX(screen_cords[0], screen_cords[1], self.size, not self.selected))
+
+    def deselect(self):
+        self.selected = False
+        self.image = pygame.transform.scale(load_image('X_Box.png'), (self.size, self.size))
 
 
 class Rock(pygame.sprite.Sprite):
