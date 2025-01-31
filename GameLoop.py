@@ -9,11 +9,11 @@ from MenuLogic import *
 menu = Menu()
 board = Board()
 
-
+# Невидимая нижняя гарница поля
 ground = pygame.sprite.Sprite(ground_border)
 ground.rect = pygame.Rect(0, SCREEN_SIZE[1] - menu.bottom_intend, SCREEN_SIZE[0], SCREEN_SIZE[1] - menu.bottom_intend)
 
-
+# Счетчик фпс
 prev_time = time.perf_counter()
 current_time = prev_time
 FPS = 100
@@ -66,6 +66,7 @@ while running:
 
         board.render(screen)
 
+    # Таймер, для стабильности фпс
     while time.perf_counter() < (current_time + STEP_TIME):
         pass
 
