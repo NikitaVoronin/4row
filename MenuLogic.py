@@ -225,6 +225,8 @@ class Menu:
     def board_width_down(self):
         if self.board_width > 7:
             self.board_width -= 1
+        if self.len_of_chain > self.board_width:
+            self.len_of_chain = self.board_width
         self.text_board_width = self.font.render(str(self.board_width), True, (255, 255, 255))
         self.update_render_intends()
 
@@ -237,6 +239,8 @@ class Menu:
     def board_height_down(self):
         if self.board_height > 6:
             self.board_height -= 1
+        if self.len_of_chain > self.board_height:
+            self.len_of_chain = self.board_height
         self.text_board_height = self.font.render(str(self.board_height), True, (255, 255, 255))
         self.update_render_intends()
 
