@@ -55,6 +55,7 @@ class Board:
         self.error_text = self.font.render('', True, (255, 0, 0))
 
     def render(self, screen):
+        self.change_player_mark()
         falling_boxes.draw(screen)
         placed_boxes.draw(screen)
         player_mark.draw(screen)

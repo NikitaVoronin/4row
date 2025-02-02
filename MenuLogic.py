@@ -189,9 +189,11 @@ class Menu:
         screen.blit(self.text_relief_field, text_relief_field_intend)
 
     def update_render_intends(self):
-        self.cell_size = (SCREEN_SIZE[1] - self.bottom_intend) // (self.board_height + 2)
+        self.cell_size = (SCREEN_SIZE[0] - 2 * self.left_intend) // self.board_width \
+            if self.board_width > self.board_height else (SCREEN_SIZE[1] - self.bottom_intend) // (self.board_height + 2)
+
         self.left_intend = (SCREEN_SIZE[0] - self.cell_size * self.board_width) // 2
-        self.top_intend = 2 * self.cell_size
+        self.top_intend = SCREEN_SIZE[1] - self.bottom_intend - self.cell_size * self.board_height
 
     def choose_mode_classic(self):
         self.mode_classic = True
