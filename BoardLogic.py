@@ -170,7 +170,8 @@ class Board:
             self.player = not self.player
 
             self.change_player_mark()
-            self.error_text = self.font.render('', True, (255, 0, 0))
+
+        self.error_text = self.font.render('', True, (255, 0, 0))
 
     def spawn_new_box(self, x, y):
         if not self.mode_classic and self.selected_boxes:
@@ -384,8 +385,13 @@ class Board:
                                                          (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
 
     def to_menu(self):
-        self.relief_cords = []
+        winner_sprite.empty()
+        self.set_board()
         self.pause_flag = False
+        self.winner = None
+        self.score_X = 0
+        self.score_O = 0
+        self.relief_cords = []
         self.button_pause.image = pygame.transform.scale(load_image('Pause.png'),
                                                          (SCREEN_SIZE[1] * 0.08, SCREEN_SIZE[1] * 0.08))
         self.game_flag = False
