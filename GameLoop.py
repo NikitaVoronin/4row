@@ -45,6 +45,8 @@ while running:
                     board.len_of_chain = menu.len_of_chain
                     board.game_flag = True
                     board.set_board()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
         menu.render()
 
     else:
