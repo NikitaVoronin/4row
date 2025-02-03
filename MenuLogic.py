@@ -34,6 +34,7 @@ class Menu:
         self.text_len_of_chain = self.font.render('Length of chain', True, (255, 255, 255))
         self.text_relief_field = self.font.render('Relief field', True, (255, 255, 255))
         self.num_len_of_chain = self.font.render(str(self.len_of_chain), True, (255, 255, 255))
+        self.text_exit = self.font.render('For exit press escape', True, (25, 0, 25))
 
         self.button_play_size = (SCREEN_SIZE[1] * 0.3, SCREEN_SIZE[1] * 0.12)
         self.button_play_intend = (SCREEN_SIZE[0] * 0.7, SCREEN_SIZE[1] * 0.8)
@@ -187,6 +188,10 @@ class Menu:
         text_relief_field_intend = (SCREEN_SIZE[0] * 0.1159,
                                     SCREEN_SIZE[1] * 0.5 + (self.checkbox_size[1] - self.text_relief_field.get_height()) // 2)
         screen.blit(self.text_relief_field, text_relief_field_intend)
+
+        text_exit_intend = (SCREEN_SIZE[0] * 0.05,
+                            SCREEN_SIZE[1] * 0.93)
+        screen.blit(self.text_exit, text_exit_intend)
 
     def update_render_intends(self):
         self.cell_size = (SCREEN_SIZE[0] - 2 * self.left_intend) // self.board_width \
